@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>RCM</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link href="css/carradio.min.css" rel="stylesheet">
+        <script src="js/jquery-1.10.2.min.js"></script>
+        <script src="js/sammy.js"></script>
+        <script src="js/player.js"></script>
+        <style>
+            * {
+                 -moz-user-select: none; 
+                 -webkit-user-select: none; 
+                 -ms-user-select:none; 
+                 user-select:none;
+                 -o-user-select:none;
+
+                margin: 0;
+                padding: 0;
+            }
+            #container {
+                margin: 4px auto;
+                width: 320px;
+            }
+            #keyboard #keyboard-sm {
+                margin: 0;
+                padding: 0;
+                list-style: none;
+            }
+            #keyboard li {
+                float: left;
+                margin: 0 5px 5px 0;
+                width: 40px;
+                height: 40px;
+                line-height: 40px;
+                text-align: center;
+                background: black;
+                border: 1px solid yellowgreen;
+                -moz-border-radius: 5px;
+                -webkit-border-radius: 5px;
+            }
+            #keyboard-sm li {
+                float: left;
+                margin: 0 5px 5px 0;
+                width: 30px;
+                height: 30px;
+                line-height: 30px;
+                text-align: center;
+                background: black;
+                border: 1px solid yellowgreen;
+                -moz-border-radius: 5px;
+                -webkit-border-radius: 5px;
+            }
+            .content {
+                width: 100%;
+                height: 100px;
+                padding: 0px 0px;
+            }
+            .main_articles {
+                width: 100%;
+                float: left;
+                height: 100px;
+                margin-left: 0px;
+            }
+            .site_description {
+                display: -moz-box; /* Firefox*/
+                display: -webkit-box; /* Chrome */
+                display: -ms-flexbox; /* IE 10 */
+                display: flexbox;
+                flex-direction: row;
+                flex-align:start;
+                width: 100%;
+                height: 100px;
+            }
+            .desImage {
+                -webkit-box-ordinal-group: 1; /* iOS 6-, Safari, Opera*/
+                -moz-box-ordinal-group: 1; /* Firefox*/
+                -ms-flex-order: 1; /* IE 10 */
+                -webkit-order: 1; /* Chrome */
+                flex-order: 1;
+                width: 100px;
+                height: 100px;
+            }
+
+            .desImage img {
+                width: 100px;
+                height: 100px;
+                margin-left: 4px;
+                border: 0px solid #6d6d6d;
+            }
+
+            .des {
+                margin-left: 4px;
+                -webkit-box-ordinal-group: 2; /* iOS 6-, Safari, Opera*/
+                -moz-box-ordinal-group: 2; /* Firefox*/
+                -ms-flex-order: 2; /* IE 10 */
+                -webkit-order: 2; /* Chrome */
+                flex-order: 2;
+                width: 70%;
+                height: 100px;
+                background-color: black;
+                padding: 0px;
+            }
+
+        </style>
+    </head>
+    <body>
+        <div style="position: absolute; top: 0; left: 0; right: 0; background: black">
+            <table>
+                <tr style="font-size:14px">
+                    <td id="track-icon" class="glyphicon glyphicon-pause" style="color: yellowgreen"></td>
+                    <td id="counter" style="text-align: center; color: yellowgreen"></td>
+                    <td id="volume-icon" class="glyphicon glyphicon-volume-up" style="color: yellow"></td>
+                    <td id="volume" style="text-align: center; color: yellow"></td>
+                    <td id="random-icon" class="glyphicon glyphicon-random" style="color: yellowgreen"></td>
+                    <td id="repeat-icon" class="glyphicon glyphicon-repeat" style="color: orange"></td>
+                    <td id="cloud-icon" class="glyphicon glyphicon-cloud" style="color: yellow"></td>
+                    <td id="currentpos" style="text-align: center; color: orange"></td>
+                    <td id="notification-icon" class="glyphicon glyphicon-ok" style="color: yellow"></td>
+                    <td id="songrating" style="text-align: center; color: yellowgreen"></td>
+                </tr>
+            </table>
+            <table>
+                <tr>
+                    <td id="currentradio" style="font-size:10px; color: orange"></td>
+                    <td id="currentradiostatus" style="font-size:10px; color: yellowgreen"></td>
+                    <td id="currentradiosize" style="font-size:10px; color: yellow"></td>
+                </tr>
+            </table>
+        </div>
+        <div style="position: absolute; top: 40px; left: 0; right: 0;">
+            <div class="content">
+                <section class="main_articles">
+                    <article class="site_description">
+                        <div class="des_image">
+                            <a href="menu.html">
+                            <img src="" id="artimage" style="width:100px; height:auto;" alt="">
+                        </a>
+                        </div>
+                        <div class="des">
+                            <span id="currenttrack" style="color: yellowgreen; font-size:20px;"></span>
+                            <p><span id="artist" style="color: orange; font-size:18px;"></span><br>
+                            <p><span id="album" style="color: yellow; font-size:14px;"></span>
+                        </div>
+                    </article>
+                </section>
+            </div>
+            <!--table>
+                <tr style="height: 100px; background: black;">
+                    <td style="width: 100px; height: 100px;">
+                        <a href="menu.html">
+                            <img src="" id="artimage" style="width:100px; height:auto;" alt="">
+                        </a>
+                    </td>
+                    <td style="max-height: 100px;">
+                        <table>
+                            <tr><td id="currenttrack" style="text-align: center; color: yellowgreen; font-size:20px; width: 220px;">
+                            </td></tr>
+                            <tr><td id="artist" style="color: orange; font-size:18px; width: 220px;"></td></tr>
+                            <tr><td id="album" style="text-align: right; color: yellow; font-size:14px; width: 220px;"></td></tr>
+                            <tr>
+                                <td style="text-align: right; color: yellowgreen; font-size:14px;">next:</td>
+                                <td id="next_artist" style="text-align: right; color: orange; font-size:14px;"></td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table-->
+            <div id="container" style="position: absolute; top: 100px; left: 0;">
+                <ul id="keyboard-sm">
+                    <li class="glyphicon glyphicon-thumbs-up"
+                    onclick="socket.send('MPD_API_LIKE');"></li>
+                    <li class="glyphicon glyphicon-thumbs-down"
+                    onclick="socket.send('MPD_API_DISLIKE');"></li>
+                </ul>
+            </div>
+            <div id="container" style="position: absolute; top: 140px; left: 0;">
+                <ul id="keyboard">
+                    <li class="glyphicon glyphicon-step-backward"
+                    onclick="socket.send('MPD_API_SET_PREV');"></li>
+                    <li id="play-icon" class="glyphicon glyphicon-pause"
+                    onclick="clickPlay();"></li>
+                    <li class="glyphicon glyphicon-step-forward"
+                    onclick="socket.send('MPD_API_SET_NEXT');"></li>
+                </ul>
+            </div>
+            <div id="container" style="position: absolute; top: 140px; left: 180px;">
+                <ul id="keyboard">
+                    <li class="glyphicon glyphicon-minus"
+                    onclick="socket.send('MPD_API_DECREASE_VOLUME');"></li>
+                    <li class="glyphicon glyphicon-plus"
+                    onclick="socket.send('MPD_API_INCREASE_VOLUME');"></li>
+                </ul>
+            </div>
+        </div>
+    </body>
+</html>
