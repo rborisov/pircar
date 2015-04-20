@@ -34,16 +34,23 @@ GtkWidget *Menu = NULL;
 
 static void indicator_init ();
 static void menu_init ();
+static int idle();
 
 int main(int argc, char* argv[])
 {
+    rpc_init();
+
     // Initialize GTK+
     gtk_init(&argc, &argv);
     indicator_init();
     menu_init();
 
+    gtk_idle_add((GtkFunction)idle, NULL);
+
     // Run the main GTK+ event loop
     gtk_main();
+
+    rpc_free();
 
     return 0;
 }
@@ -64,6 +71,12 @@ static void indicator_init ()
 
     app_indicator_set_attention_icon (Indicator, "indicator-sound");
     app_indicator_set_status (Indicator, APP_INDICATOR_STATUS_ACTIVE);
+}
+
+static int idle()
+{
+    app_indicator_set_label(Indicator, rpc_song_string(), NULL);
+    return 1;
 }
 
 static void menu_init ()
