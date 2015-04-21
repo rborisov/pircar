@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.6)
 
-project (indicator-test)
+project (wnck-test)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/cmake/")
 set(CPACK_PACKAGE_VERSION_MAJOR "1")
 set(CPACK_PACKAGE_VERSION_MINOR "2")
@@ -38,7 +38,16 @@ set(SOURCES
     main.c
 )
 
-add_executable(indicator-test ${SOURCES})
-target_link_libraries(indicator-test ${CMAKE_THREAD_LIBS_INIT} ${GTK2_LIBRARIES} ${APPINDICATOR_LIBRARY} ${WNCK_INCLUDE_DIRS})
+add_executable(wnck-test ${SOURCES})
+target_link_libraries(wnck-test ${CMAKE_THREAD_LIBS_INIT} ${GTK2_LIBRARIES} ${APPINDICATOR_LIBRARY} ${WNCK_LIBRARIES})
 
-install(TARGETS indicator-test DESTINATION bin)
+install(TARGETS wnck-test DESTINATION bin)
+
+set(SOURCES
+    main1.c
+    )
+
+add_executable(wnck1-test ${SOURCES})
+target_link_libraries(wnck1-test ${CMAKE_THREAD_LIBS_INIT} ${GTK2_LIBRARIES} ${APPINDICATOR_LIBRARY} ${WNCK_LIBRARIES})
+
+install(TARGETS wnck1-test DESTINATION bin)
