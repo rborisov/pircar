@@ -65,7 +65,8 @@ static void indicator_init ()
     /* TODO: set actual icon */
     Indicator = app_indicator_new (
             "indi-player",
-            "/usr/share/pixmaps/atom.png",
+            "/usr/share/pixmaps/pause.jpg",
+//            "/media/ruinrobo/data250/work/pircar/pause.jpg",            
             APP_INDICATOR_CATEGORY_APPLICATION_STATUS
             );
 
@@ -76,6 +77,10 @@ static void indicator_init ()
 static int idle()
 {
     app_indicator_set_label(Indicator, rpc_song_string(), NULL);
+    if (rpc_is_playing())
+        app_indicator_set_icon(Indicator, "/usr/share/pixmaps/play.jpg");
+    else
+        app_indicator_set_icon(Indicator, "/usr/share/pixmaps/pause.jpg");
     return 1;
 }
 

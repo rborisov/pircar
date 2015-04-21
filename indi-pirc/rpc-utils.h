@@ -5,5 +5,6 @@ void rpc_init();
 void rpc_free();
 void rpc_play_toggle();
 char* rpc_song_string();
+int rpc_is_playing();
 
 #endif
