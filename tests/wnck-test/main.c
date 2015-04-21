@@ -1,3 +1,7 @@
+/*
+ * https://developer.gnome.org/libwnck/stable/getting-started.html
+ */
+
 #include <libwnck/libwnck.h>
 
     int
