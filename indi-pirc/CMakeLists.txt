@@ -19,6 +19,7 @@ find_package(LibMPDClient REQUIRED)
 pkg_check_modules(PC_APPINDICATOR REQUIRED appindicator-0.1)
 pkg_check_modules(GTK2 REQUIRED gtk+-2.0)
 #pkg_check_modules(WEBKIT REQUIRED webkit-1.0)
+pkg_check_modules(WNCK REQUIRED libwnck-1.0)
 
 find_path(APPINDICATOR_INCLUDE_DIR NAMES libappindicator/app-indicator.h
     HINTS ${PC_APPINDICATOR_INCLUDEDIR} ${PC_APPINDICATOR_INCLUDE_DIRS}
@@ -38,18 +39,18 @@ endif()
 mark_as_advanced(APPINDICATOR_INCLUDE_DIR APPINDICATOR_LIBRARY)
 
 include_directories(${PROJECT_BINARY_DIR} ${PROJECT_SOURCE_DIR} 
-    ${APPINDICATOR_INCLUDE_DIR} ${GTK2_INCLUDE_DIRS}
+    ${APPINDICATOR_INCLUDE_DIR} ${GTK2_INCLUDE_DIRS} ${WNCK_INCLUDE_DIRS}
     ${LIBMPDCLIENT_INCLUDE_DIRS})
 #${WEBKIT_INCLUDE_DIR} ${LIBSOUP_INCLUDE_DIRS} ${GTK2_INCLUDE_DIRS})
 
-link_directories(${APPINDICATOR_LIBRARY} ${GTK2_LIBRARY_DIRS}
+link_directories(${APPINDICATOR_LIBRARY} ${GTK2_LIBRARY_DIRS} ${WNCK_LIBRARIES}
     ${LIBMPDCLIENT_LIBRARIES})
 #${WEBKIT_LIBRARY} ${LIBSOUP_LIBRARIES} ${GTK2_LIBRARY_DIRS})
 
 include(CheckCSourceCompiles)
 
-set(CMAKE_C_FLAGS "-std=gnu99 -Wall") 
-set(CMAKE_C_FLAGS_DEBUG "-ggdb -pedantic")
+set(CMAKE_C_FLAGS "-std=gnu99 -Wall -DWNCK_I_KNOW_THIS_IS_UNSTABLE") 
+set(CMAKE_C_FLAGS_DEBUG "-ggdb -pedantic -DWNCK_I_KNOW_THIS_IS_UNSTABLE")
 
 get_target_property(MKDATA_EXE mkdata LOCATION)
 
@@ -59,7 +60,7 @@ set(SOURCES
 )
 
 add_executable(indi-pirc ${SOURCES})
-target_link_libraries(indi-pirc ${CMAKE_THREAD_LIBS_INIT} ${GTK2_LIBRARIES} 
+target_link_libraries(indi-pirc ${CMAKE_THREAD_LIBS_INIT} ${GTK2_LIBRARIES} ${WNCK_LIBRARIES}
     ${APPINDICATOR_LIBRARY} ${LIBMPDCLIENT_LIBRARIES}) 
 #${WEBKIT_LIBRARY})
 

@@ -27,6 +27,8 @@
 #include <string.h>
 #include <gtk/gtk.h>
 #include <libappindicator/app-indicator.h>
+#include <libwnck/libwnck.h>
+#include <time.h>
 #include "rpc-utils.h"
 
 AppIndicator *Indicator = NULL;
@@ -62,11 +64,9 @@ static void quit ()
 
 static void indicator_init ()
 {
-    /* TODO: set actual icon */
     Indicator = app_indicator_new (
             "indi-player",
-            "/usr/share/pixmaps/pause.jpg",
-//            "/media/ruinrobo/data250/work/pircar/pause.jpg",            
+            "/usr/share/pixmaps/pause.png",
             APP_INDICATOR_CATEGORY_APPLICATION_STATUS
             );
 
@@ -78,10 +78,32 @@ static int idle()
 {
     app_indicator_set_label(Indicator, rpc_song_string(), NULL);
     if (rpc_is_playing())
-        app_indicator_set_icon(Indicator, "/usr/share/pixmaps/play.jpg");
+        app_indicator_set_icon(Indicator, "/usr/share/pixmaps/play.png");
     else
-        app_indicator_set_icon(Indicator, "/usr/share/pixmaps/pause.jpg");
+        app_indicator_set_icon(Indicator, "/usr/share/pixmaps/pause.png");
     return 1;
+}
+
+static void browser()
+{
+    WnckScreen *screen;
+//    WnckWindow *active_window;
+    GList *window_l;
+
+//    gdk_init (&argc, &argv);
+    screen = wnck_screen_get_default ();
+    wnck_screen_force_update (screen);
+//    active_window = wnck_screen_get_active_window (screen);
+    for (window_l = wnck_screen_get_windows (screen); window_l != NULL; window_l = window_l->next)
+    {
+        WnckWindow *window = WNCK_WINDOW (window_l->data);
+        if (strcmp("browser-pirc", wnck_window_get_name (window)) == 0) {
+            wnck_window_activate(window, (guint32)time(NULL));
+            break;
+        }
+//        g_print ("%s%s\n", wnck_window_get_name (window),
+//                window == active_window ? " (active)" : "");
+    }
 }
 
 static void menu_init ()
@@ -92,6 +114,11 @@ static void menu_init ()
     item = gtk_menu_item_new_with_label ("Play/Pause");
     gtk_menu_append (Menu, item);
     g_signal_connect (G_OBJECT (item), "activate", G_CALLBACK (rpc_play_toggle), NULL);
+    gtk_widget_show_all (item);
+
+    item = gtk_menu_item_new_with_label ("Browser");
+    gtk_menu_append (Menu, item);
+    g_signal_connect (G_OBJECT (item), "activate", G_CALLBACK (browser), NULL);
     gtk_widget_show_all (item);
 
     item = gtk_menu_item_new_with_label ("Quit");

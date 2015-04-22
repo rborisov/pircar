@@ -8,7 +8,7 @@
 #define OPT_HOST NULL
 #define OPT_PORT NULL
 
-char buffer[64] = "";
+char buffer[128] = "";
 struct mpd_connection *conn;
 
 void printErrorAndExit(struct mpd_connection *conn);
