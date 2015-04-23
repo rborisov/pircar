@@ -70,4 +70,4 @@ add_executable(radio-pirc ${SOURCES})
 target_link_libraries(radio-pirc ${LIBMPDCLIENT_LIBRARY} ${CMAKE_THREAD_LIBS_INIT} streamripper mad ogg vorbis config id3tag sqlite3 curl)
 #-logg -lvorbis -lmad -lid3tag -lz -lglib-2.0
 install(TARGETS radio-pirc DESTINATION bin)
-install(FILES radio-pirc.1 DESTINATION ${CMAKE_INSTALL_PREFIX}/share/man/man1)
+#install(FILES radio-pirc.1 DESTINATION ${CMAKE_INSTALL_PREFIX}/share/man/man1)

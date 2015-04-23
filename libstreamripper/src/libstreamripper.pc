@@ -1,4 +1,4 @@
-prefix=/usr/local
+prefix=/media/ruinrobo/data250/work/pircar/libstreamripper
 exec_prefix=${prefix}
 libdir=${exec_prefix}/lib
 datarootdir=${prefix}/share
