@@ -1,12 +1,12 @@
-cmake_minimum_required(VERSION 2.6)
+cmake_minimum_required(VERSION 2.8)
 
 project (radio-pirc)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/../cmake/")
 set(CPACK_PACKAGE_VERSION_MAJOR "1")
 set(CPACK_PACKAGE_VERSION_MINOR "2")
 set(CPACK_PACKAGE_VERSION_PATCH "2")
-set(STREAMRIPPER_LIB_PATH "${PROJECT_SOURCE_DIR}/../libstreamripper/")
-set(STREAMRIPPER_SRC_PATH "${PROJECT_SOURCE_DIR}/../libstreamripper/src/")
+#set(STREAMRIPPER_LIB_PATH "${PROJECT_SOURCE_DIR}/../libstreamripper/")
+#set(STREAMRIPPER_SRC_PATH "${PROJECT_SOURCE_DIR}/../libstreamripper/src/")
 
 #SET(CMAKE_BUILD_TYPE debug)
 #SET(USE_GTK3 "1")
@@ -25,9 +25,23 @@ find_package(Sqlite3 REQUIRED)
 
 MESSAGE(STATUS "GLIB2_INCLUDE_DIRS: " ${GLIB2_INCLUDE_DIRS})
 
+set(STREAMRIPPER_PATH "${CMAKE_CURRENT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/libstreamripper.dir/")
+
+#include(ExternalProject)
+#ExternalProject_Add(
+#    libstreamripper
+#    SOURCE_DIR ${PROJECT_SOURCE_DIR}/../libstreamripper/src
+#    CONFIGURE_COMMAND ${PROJECT_SOURCE_DIR}/../libstreamripper/configure --prefix=${STREAMRIPPER_PATH}
+#    PREFIX ${STREAMRIPPER_PATH}
+#    BUILD_COMMAND make
+#    BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}
+    #BUILD_IN_SOURCE 1
+    #    )
+
 configure_file(src/config.h.in ${PROJECT_BINARY_DIR}/config.h)
-include_directories(${PROJECT_BINARY_DIR} ${PROJECT_SOURCE_DIR} ${STREAMRIPPER_LIB_PATH} ${STREAMRIPPER_SRC_PATH} ${GLIB2_INCLUDE_DIRS})
+include_directories(${PROJECT_BINARY_DIR} ${PROJECT_SOURCE_DIR} ${STREAMRIPPER_SRC_PATH} ${GLIB2_INCLUDE_DIRS})
 #${GTK3_INCLUDE_DIRS} ${GTK3_LIBRARIES} ${WEBKIT_INCLUDE_DIR} ${LIBSOUP2_INCLUDE_DIRS})
+link_directories(${STREAMRIPPER_LIB_PATH})
 
 include(CheckCSourceCompiles)
 

@@ -5,8 +5,8 @@
 #include <string.h>
 #include <math.h>
 #include <time.h>
-#include "mchar.h"
-#include "debug.h"
+//#include "mchar.h"
+//#include "debug.h"
 #include "streamripper.h"
 #include "mpd_client.h"
 #include "mpd_utils.h"
