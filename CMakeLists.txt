@@ -15,7 +15,7 @@ set( CPACK_WARN_ON_ABSOLUTE_INSTALL_DESTINATION TRUE )
 # This is needed to set specific CPack-values when the DEB-generator is run
 set( CPACK_PROJECT_CONFIG_FILE "${CMAKE_SOURCE_DIR}/CPackConfig.cmake" )
 
-add_subdirectory( libstreamripper )
+#add_subdirectory( libstreamripper )
 add_subdirectory( indi-pirc )
 add_subdirectory( browser-pirc )
 add_subdirectory( radio-pirc )
