@@ -375,7 +375,7 @@ function clickPlay() {
 }
 
 function clickRandom() {
-    socket.send("MPD_API_TOGGLE_RANDOM," + ($("#random-icon").hasClass('gray') ? 1 : 0));
+    socket.send("MPD_API_TOGGLE_RANDOM," + ($("#random-icon").hasClass('glyphicon-sort-by-order') ? 1 : 0));
 }
 
 function basename(path) {

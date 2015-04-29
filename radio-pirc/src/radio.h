@@ -11,6 +11,7 @@ struct t_rcm {
     char filesize_str[64];
     char current_radio[MAX_LINE];
     char file_path[MAX_LINE];
+    char rnd_path[MAX_LINE];
 
     int radio_status; //0,1
     int image_update; //0,1

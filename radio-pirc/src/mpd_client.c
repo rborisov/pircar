@@ -249,6 +249,8 @@ int callback_mpd(struct mg_connection *c)
         case MPD_API_TOGGLE_RADIO:
             syslog(LOG_INFO, "%s: RADIO_TOGGLE_RADIO %i\n", __func__, radio_get_status());
             radio_toggle();
+            printf("%s: file_path - %s\n", __func__, rcm.file_path);
+            sprintf(rcm.rnd_path, "%s", rcm.file_path);
             break;
         case MPD_API_UPDATE_DB:
             mpd_run_update(mpd.conn, NULL);
@@ -286,7 +288,10 @@ int callback_mpd(struct mg_connection *c)
             break;
         case MPD_API_TOGGLE_RANDOM:
             if(sscanf(c->content, "MPD_API_TOGGLE_RANDOM,%u", &uint_buf))
+            {
+//                printf("%s: MPD_API_TOGGLE_RANDOM,%u\n", uint_buf);
                 mpd_run_random(mpd.conn, uint_buf);
+            }
             break;
         case MPD_API_TOGGLE_REPEAT:
             if(sscanf(c->content, "MPD_API_TOGGLE_REPEAT,%u", &uint_buf))
@@ -346,6 +351,8 @@ int callback_mpd(struct mg_connection *c)
                 strcpy(rcm.current_radio, p_charbuf);
                 streamripper_set_url_dest(rcm.current_radio);
                 init_streamripper();*/
+                printf("%s: file_path - %s\n", __func__, rcm.file_path);
+                sprintf(rcm.rnd_path, "%s", rcm.file_path);
                 free(p_charbuf);
             }
             break;
@@ -474,7 +481,7 @@ static int mpd_notify_callback(struct mg_connection *c) {
             syslog(LOG_INFO, "%s song_id == %i\n", __func__, mpd.song_id);
             get_random_song(mpd.conn, str, rcm.file_path);
             if (strcmp(str, "") == 0)
-               get_random_song(mpd.conn, str, "radio");
+               get_random_song(mpd.conn, str, "");
             syslog(LOG_INFO, "%s: add random song %s and play\n", __func__, str);
             mpd_run_add(mpd.conn, str);
             mpd_run_play(mpd.conn);
@@ -568,7 +575,7 @@ void mpd_poll(struct mg_server *s)
             if (queue_is_empty) {
                 get_random_song(mpd.conn, str, rcm.file_path);
                 if (strcmp(str, "") == 0)
-                    get_random_song(mpd.conn, str, "radio");
+                    get_random_song(mpd.conn, str, "");
                 syslog(LOG_DEBUG, "%s: add random song %s\n", __func__, str);
                 mpd_run_add(mpd.conn, str);
                 queue_is_empty = 0;
