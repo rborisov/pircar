@@ -347,10 +347,10 @@ int callback_mpd(struct mg_connection *c)
             {
                 syslog(LOG_INFO, "%s set radio: %s\n", __func__, p_charbuf);
                 printf("%s set radio: %s\n", __func__, p_charbuf);
-/*                stop_streamripper();
+                stop_streamripper();
                 strcpy(rcm.current_radio, p_charbuf);
                 streamripper_set_url_dest(rcm.current_radio);
-                init_streamripper();*/
+                init_streamripper();
                 printf("%s: file_path - %s\n", __func__, rcm.file_path);
                 sprintf(rcm.rnd_path, "%s", rcm.file_path);
                 free(p_charbuf);
