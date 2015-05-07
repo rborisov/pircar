@@ -11,7 +11,7 @@ find_package(PkgConfig REQUIRED)
 find_package(LibMPDClient REQUIRED)
 find_package(LibSoup REQUIRED)
 
-pkg_check_modules(PC_APPINDICATOR REQUIRED appindicator-0.1)
+#pkg_check_modules(PC_APPINDICATOR REQUIRED appindicator-0.1)
 pkg_check_modules(GTK2 REQUIRED gtk+-2.0)
 pkg_check_modules(WEBKIT REQUIRED webkit-1.0)
 
@@ -20,7 +20,7 @@ find_path(WEBKIT_INCLUDE_DIR webkit/webkit.h
 find_library(WEBKIT_LIBRARY 
     NAMES webkitgtk-1.0)
 
-mark_as_advanced(APPINDICATOR_INCLUDE_DIR APPINDICATOR_LIBRARY)
+#mark_as_advanced(APPINDICATOR_INCLUDE_DIR APPINDICATOR_LIBRARY)
 
 include_directories(${PROJECT_BINARY_DIR} ${PROJECT_SOURCE_DIR} 
     ${WEBKIT_INCLUDE_DIR} ${LIBSOUP_INCLUDE_DIRS} ${GTK2_INCLUDE_DIRS})
