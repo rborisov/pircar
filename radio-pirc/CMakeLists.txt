@@ -32,7 +32,7 @@ include_directories(${PROJECT_BINARY_DIR} ${PROJECT_SOURCE_DIR} ${STREAMRIPPER_L
 include(CheckCSourceCompiles)
 
 set(CMAKE_C_FLAGS "-std=gnu99 -Wall -D__UNIX__")
-set(CMAKE_C_FLAGS_DEBUG "-ggdb -pedantic")
+set(CMAKE_C_FLAGS_DEBUG "-ggdb -pedantic -DMONGOOSE_ENABLE_DEBUG")
 
 file(GLOB RESOURCES
 	RELATIVE ${PROJECT_SOURCE_DIR}

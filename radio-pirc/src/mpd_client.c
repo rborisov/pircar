@@ -198,7 +198,7 @@ int callback_mpd(struct mg_connection *c)
     unsigned int uint_buf, uint_buf_2;
     int int_buf;
     char *p_charbuf = NULL;
-
+printf("%s\n", c->content);
     if(cmd_id == -1)
         return MG_CLIENT_CONTINUE;
 

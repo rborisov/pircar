@@ -6,6 +6,7 @@
 #include "radio.h"
 
 sqlite3 *conn;
+sqlite3_stmt *res;
 char *sqlchar0, *sqlchar1, *sqlchar2;
 
 void convert_str(char *instr)
@@ -69,6 +70,21 @@ error:
     syslog(LOG_DEBUG, "%s, %s\n", __func__, sqlite3_errmsg(conn));
     sqlite3_close(conn);
     return rc;
+}
+
+int db_get_radio_name_first(char* name)
+{
+//    char *err_msg = 0;
+    sqlite3_finalize(res);
+    int rc = sqlite3_prepare_v2(conn, "SELECT name FROM Radios", -1, &res, 0);
+    if (rc != SQLITE_OK) {
+        printf("SQLITE error: %s\n", sqlite3_errmsg(conn));
+    }
+}
+
+int db_get_radio_name_next(char* name)
+{
+
 }
 
 /*
