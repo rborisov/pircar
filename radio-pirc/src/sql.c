@@ -81,16 +81,14 @@ sql_get_int_field(sqlite3 *db, const char *fmt, ...)
 	va_start(ap, fmt);
 	sql = sqlite3_vmprintf(fmt, ap);
 	va_end(ap);
-
-	//DPRINTF(E_DEBUG, L_DB_SQL, "sql: %s\n", sql);
-//    syslog(LOG_DEBUG, "%s sql: %s\n", __func__, sql);
-
+#if 0
+    syslog(LOG_DEBUG, "%s sql: %s\n", __func__, sql);
+#endif
 	switch (sqlite3_prepare_v2(db, sql, -1, &stmt, NULL))
 	{
 		case SQLITE_OK:
 			break;
 		default:
-			//DPRINTF(E_ERROR, L_DB_SQL, "prepare failed: %s\n%s\n", sqlite3_errmsg(db), sql);
             syslog(LOG_DEBUG, "%s prepare failed: %s\n%s\n", __func__, sqlite3_errmsg(db), sql);
 			sqlite3_free(sql);
 			return -1;
@@ -120,7 +118,6 @@ sql_get_int_field(sqlite3 *db, const char *fmt, ...)
 			ret = sqlite3_column_int(stmt, 0);
 			break;
 		default:
-			//DPRINTF(E_WARN, L_DB_SQL, "%s: step failed: %s\n%s\n", __func__, sqlite3_errmsg(db), sql);
             syslog(LOG_DEBUG, "%s: step failed: %s\n%s\n", __func__, sqlite3_errmsg(db), sql);
 			ret = -1;
 			break;

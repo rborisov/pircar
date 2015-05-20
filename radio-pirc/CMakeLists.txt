@@ -9,7 +9,6 @@ set(STREAMRIPPER_LIB_PATH "${PROJECT_SOURCE_DIR}/../libstreamripper/")
 set(STREAMRIPPER_SRC_PATH "${PROJECT_SOURCE_DIR}/../libstreamripper/src/")
 
 #SET(CMAKE_BUILD_TYPE debug)
-#SET(USE_GTK3 "1")
 
 option(WITH_MPD_HOST_CHANGE "Let users of the web frontend change the MPD Host" ON)
 
@@ -18,16 +17,13 @@ find_package(Threads REQUIRED)
 find_package(GLIB2 REQUIRED)
 find_package(CURL REQUIRED)
 find_package(Sqlite3 REQUIRED)
-#find_package(GTK3 REQUIRED)
-#find_package(WebKit3 REQUIRED)
-#find_package(LibSoup2 REQUIRED)
-#find_package(MySQL REQUIRED)
 
 MESSAGE(STATUS "GLIB2_INCLUDE_DIRS: " ${GLIB2_INCLUDE_DIRS})
 
 configure_file(src/config.h.in ${PROJECT_BINARY_DIR}/config.h)
-include_directories(${PROJECT_BINARY_DIR} ${PROJECT_SOURCE_DIR} ${STREAMRIPPER_LIB_PATH} ${STREAMRIPPER_SRC_PATH} ${GLIB2_INCLUDE_DIRS})
-#${GTK3_INCLUDE_DIRS} ${GTK3_LIBRARIES} ${WEBKIT_INCLUDE_DIR} ${LIBSOUP2_INCLUDE_DIRS})
+include_directories(${PROJECT_BINARY_DIR} ${PROJECT_SOURCE_DIR}
+    "${PROJECT_SOURCE_DIR}/src/" ${STREAMRIPPER_LIB_PATH} 
+    ${STREAMRIPPER_SRC_PATH} ${GLIB2_INCLUDE_DIRS})
 
 include(CheckCSourceCompiles)
 
@@ -68,6 +64,16 @@ set(SOURCES
 
 add_executable(radio-pirc ${SOURCES})
 target_link_libraries(radio-pirc ${LIBMPDCLIENT_LIBRARY} ${CMAKE_THREAD_LIBS_INIT} streamripper mad ogg vorbis config id3tag sqlite3 curl)
-#-logg -lvorbis -lmad -lid3tag -lz -lglib-2.0
 install(TARGETS radio-pirc DESTINATION bin)
 #install(FILES radio-pirc.1 DESTINATION ${CMAKE_INSTALL_PREFIX}/share/man/man1)
+
+set(DBRADIO
+    tools/dbradio.c
+    src/sqlitedb.c
+    src/sql.c
+    src/radio.c
+    src/streamripper.c
+)
+
+add_executable(dbradio ${DBRADIO})
+target_link_libraries(dbradio ${SQLITE3_LIBRARIES} config streamripper mad ogg vorbis id3tag)

@@ -87,6 +87,11 @@ int db_get_radio_name_next(char* name)
 
 }
 
+void db_get_rnd_song_first(char* name)
+{
+
+}
+
 /*
  * get numplayed from Songs or 0 when error
  */
