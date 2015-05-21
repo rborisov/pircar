@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <sqlite3.h>
 #include "sqlitedb.h"
 
 char *sqlchar0, *sqlchar1, *sqlchar2;
@@ -6,8 +7,8 @@ char *sqlchar0, *sqlchar1, *sqlchar2;
 char *get_radio_url(char* radio)
 {
     sqlite3_free(sqlchar0);
-    sqlchar0 = sql_get_text_field(conn, "SELECT radio FROM Radios WHERE "
-                    "radio = '%s' AND artist = '%s'", song, artist);
+//    sqlchar0 = sql_get_text_field(conn, "SELECT radio FROM Radios WHERE "
+//                    "radio = '%s' AND artist = '%s'", song, artist);
     return sqlchar0;
 }
 

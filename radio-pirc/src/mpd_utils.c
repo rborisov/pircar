@@ -91,41 +91,53 @@ int mpd_insert ( struct mpd_connection *conn, char *song_path )
 void get_random_song(struct mpd_connection *conn, char *str, char *path)
 {
     struct mpd_entity *entity;
-    int listened0 = 65000;
+    int listened0 = 65000,
+        skipnum, numberofsongs = 0;
 
-    syslog(LOG_DEBUG, "%s: path %s\n", __func__, path);
-    if (!mpd_send_list_meta(conn, path))
+    struct mpd_stats *stats = mpd_run_stats(conn);
+    if (stats == NULL)
+        return;
+    numberofsongs = mpd_stats_get_number_of_songs(stats);
+    mpd_stats_free(stats);
+    skipnum = rand() % numberofsongs;
+
+    syslog(LOG_DEBUG, "%s: path %s; number of songs: %i skip: %i\n", 
+            __func__, path, numberofsongs, skipnum);
+    if (!mpd_send_list_all_meta(conn, ""))//path))
     {
         syslog(LOG_ERR, "%s: error: mpd_send_list_meta %s\n", __func__, path);
         return;
     }
 
-    srand((unsigned)time(0));
+//    srand((unsigned)time(0));
 
     while((entity = mpd_recv_entity(conn)) != NULL)
     {
         const struct mpd_song *song;
         if (mpd_entity_get_type(entity) == MPD_ENTITY_TYPE_SONG)
         {
+            if (skipnum-- > 0) 
+                continue;
+            
             int listened;
             song = mpd_entity_get_song(entity);
             listened = db_get_song_numplayed(mpd_get_title(song),
                     mpd_get_artist(song));
             //syslog(LOG_DEBUG, "%i", listened);
             if (listened < listened0) {
-                int probability = 50 + db_get_song_rating(mpd_get_title(song),
-                        mpd_get_artist(song));
+                listened0 = listened;
+//                listened = (listened < 100) ? listened : 100;
+                    syslog(LOG_DEBUG, "listened: %i ", listened);
+                int probability = 50 + 
+                    db_get_song_rating(mpd_get_title(song), 
+                            mpd_get_artist(song));
+                    syslog(LOG_DEBUG, "probability: %i ", probability);
                 bool Yes = (rand() % 100) < probability;
                 if (Yes) {
                     sprintf(str, "%s", mpd_song_get_uri(song));
-                    listened0 = listened;
-		      syslog(LOG_DEBUG, "listened: %i ", listened);
-		      syslog(LOG_DEBUG, "probability: %i ", probability);
-		      syslog(LOG_DEBUG, "title: %s ", mpd_get_title(song));
-		      syslog(LOG_DEBUG, "artist: %s", mpd_get_artist(song));
-//			printf("\n");
-/*                    syslog(LOG_DEBUG, "%s: li: %i pr: %i %s %s\n", __func__, listened, probability,
-                            mpd_get_title(song), mpd_get_artist(song));*/
+//                    listened0 = listened;
+                    syslog(LOG_DEBUG, "title: %s ", mpd_get_title(song));
+                    syslog(LOG_DEBUG, "artist: %s", mpd_get_artist(song));
                 }
             }
         }

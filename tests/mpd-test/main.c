@@ -218,5 +218,14 @@ static int do_search(int argc, char ** argv, struct mpd_connection *conn, bool e
 
 int main(int argc, char ** argv)
 {
+    struct mpd_connection *conn = setup_connection();
+
+    if (!mpd_send_list_all_meta(conn, "radio"))
+        printErrorAndExit(conn);
+
+    print_entity_list(conn, MPD_ENTITY_TYPE_SONG);//MPD_ENTITY_TYPE_UNKNOWN);
+
+    mpd_connection_free(conn);
+
     return 0;
 }

@@ -480,8 +480,8 @@ static int mpd_notify_callback(struct mg_connection *c) {
             char str[128] = "";
             syslog(LOG_INFO, "%s song_id == %i\n", __func__, mpd.song_id);
             get_random_song(mpd.conn, str, rcm.file_path);
-            if (strcmp(str, "") == 0)
-               get_random_song(mpd.conn, str, "");
+//            if (strcmp(str, "") == 0)
+//               get_random_song(mpd.conn, str, "");
             syslog(LOG_INFO, "%s: add random song %s and play\n", __func__, str);
             mpd_run_add(mpd.conn, str);
             mpd_run_play(mpd.conn);
@@ -574,8 +574,8 @@ void mpd_poll(struct mg_server *s)
             mg_iterate_over_connections(s, mpd_notify_callback, NULL);
             if (queue_is_empty) {
                 get_random_song(mpd.conn, str, rcm.file_path);
-                if (strcmp(str, "") == 0)
-                    get_random_song(mpd.conn, str, "");
+//                if (strcmp(str, "") == 0)
+//                    get_random_song(mpd.conn, str, "");
                 syslog(LOG_DEBUG, "%s: add random song %s\n", __func__, str);
                 mpd_run_add(mpd.conn, str);
                 queue_is_empty = 0;
@@ -1030,22 +1030,6 @@ int mpd_put_browse(char *buffer, char *path, unsigned int offset)
 
     cur += json_emit_raw_str(cur, end - cur, "]}");
     return cur - buffer;
-}
-
-int mpd_random_song()
-{
-    struct mpd_stats *stats;
-    int rnd, num_songs;
-
-    stats = mpd_run_stats(mpd.conn);
-
-    num_songs = mpd_stats_get_number_of_songs(stats);
-    rnd = (int)(rand() % num_songs);
-    syslog(LOG_DEBUG, "num_songs = %i; add %i\n", num_songs, rnd);
-
-    mpd_stats_free(stats);
-
-    return rnd;
 }
 
 int mpd_search(char *buffer, char *searchstr)
