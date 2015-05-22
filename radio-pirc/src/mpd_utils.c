@@ -123,19 +123,17 @@ void get_random_song(struct mpd_connection *conn, char *str, char *path)
             song = mpd_entity_get_song(entity);
             listened = db_get_song_numplayed(mpd_get_title(song),
                     mpd_get_artist(song));
-            //syslog(LOG_DEBUG, "%i", listened);
             if (listened < listened0) {
                 listened0 = listened;
-//                listened = (listened < 100) ? listened : 100;
-                    syslog(LOG_DEBUG, "listened: %i ", listened);
+                syslog(LOG_DEBUG, "listened: %i ", listened);
                 int probability = 50 + 
                     db_get_song_rating(mpd_get_title(song), 
                             mpd_get_artist(song));
-                    syslog(LOG_DEBUG, "probability: %i ", probability);
+                syslog(LOG_DEBUG, "probability: %i ", probability);
                 bool Yes = (rand() % 100) < probability;
                 if (Yes) {
                     sprintf(str, "%s", mpd_song_get_uri(song));
-//                    listened0 = listened;
+                    syslog(LOG_DEBUG, "uri: %s ", str);
                     syslog(LOG_DEBUG, "title: %s ", mpd_get_title(song));
                     syslog(LOG_DEBUG, "artist: %s", mpd_get_artist(song));
                 }

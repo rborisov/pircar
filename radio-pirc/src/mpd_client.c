@@ -482,10 +482,12 @@ static int mpd_notify_callback(struct mg_connection *c) {
             get_random_song(mpd.conn, str, rcm.file_path);
 //            if (strcmp(str, "") == 0)
 //               get_random_song(mpd.conn, str, "");
-            syslog(LOG_INFO, "%s: add random song %s and play\n", __func__, str);
-            mpd_run_add(mpd.conn, str);
-            mpd_run_play(mpd.conn);
-
+            if (strcmp(str, "") != 0)
+            {
+                syslog(LOG_INFO, "%s: add random song %s and play\n", __func__, str);
+                mpd_run_add(mpd.conn, str);
+                mpd_run_play(mpd.conn);
+            }
             return MG_REQUEST_PROCESSED;
         }
 
@@ -576,9 +578,11 @@ void mpd_poll(struct mg_server *s)
                 get_random_song(mpd.conn, str, rcm.file_path);
 //                if (strcmp(str, "") == 0)
 //                    get_random_song(mpd.conn, str, "");
-                syslog(LOG_DEBUG, "%s: add random song %s\n", __func__, str);
-                mpd_run_add(mpd.conn, str);
-                queue_is_empty = 0;
+                if (strcmp(str, "") != 0) {
+                    syslog(LOG_DEBUG, "%s: add random song %s\n", __func__, str);
+                    mpd_run_add(mpd.conn, str);
+                    queue_is_empty = 0;
+                }
             }
             break;
         default:
