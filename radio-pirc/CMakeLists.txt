@@ -7,6 +7,7 @@ set(CPACK_PACKAGE_VERSION_MINOR "2")
 set(CPACK_PACKAGE_VERSION_PATCH "2")
 set(STREAMRIPPER_LIB_PATH "${PROJECT_SOURCE_DIR}/../libstreamripper/")
 set(STREAMRIPPER_SRC_PATH "${PROJECT_SOURCE_DIR}/../libstreamripper/src/")
+set(CONFIG_LIB_PATH "${PROJECT_SOURCE_DIR}/../libconfig-1.4.9/")
 
 #SET(CMAKE_BUILD_TYPE debug)
 
@@ -58,7 +59,7 @@ set(SOURCES
     src/sqlitedb.c
     src/sql.c
     src/mpd_utils.c
-	src/radio.c
+    src/radio.c
     assets.c
 )
 
@@ -66,6 +67,12 @@ add_executable(radio-pirc ${SOURCES})
 target_link_libraries(radio-pirc ${LIBMPDCLIENT_LIBRARY} ${CMAKE_THREAD_LIBS_INIT} streamripper mad ogg vorbis config id3tag sqlite3 curl)
 install(TARGETS radio-pirc DESTINATION bin)
 #install(FILES radio-pirc.1 DESTINATION ${CMAKE_INSTALL_PREFIX}/share/man/man1)
+install(FILES "${STREAMRIPPER_LIB_PATH}src/.libs/libstreamripper.so" DESTINATION lib)
+install(FILES "${STREAMRIPPER_LIB_PATH}src/.libs/libstreamripper.so.0" DESTINATION lib)
+install(FILES "${STREAMRIPPER_LIB_PATH}src/.libs/libstreamripper.so.0.0.0" DESTINATION lib)
+install(FILES "${CONFIG_LIB_PATH}lib/.libs/libconfig.so.9.1.3" DESTINATION lib)
+install(FILES "${CONFIG_LIB_PATH}lib/.libs/libconfig.so" DESTINATION lib)
+install(FILES "${CONFIG_LIB_PATH}lib/.libs/libconfig.so.9" DESTINATION lib)
 
 set(DBRADIO
     tools/dbradio.c
