@@ -73,6 +73,8 @@ install(FILES "${STREAMRIPPER_LIB_PATH}src/.libs/libstreamripper.so.0.0.0" DESTI
 install(FILES "${CONFIG_LIB_PATH}lib/.libs/libconfig.so.9.1.3" DESTINATION lib)
 install(FILES "${CONFIG_LIB_PATH}lib/.libs/libconfig.so" DESTINATION lib)
 install(FILES "${CONFIG_LIB_PATH}lib/.libs/libconfig.so.9" DESTINATION lib)
+install(FILES "${PROJECT_SOURCE_DIR}/files/ympd.conf" DESTINATION src)
+install(FILES "${PROJECT_SOURCE_DIR}/files/mpd.conf" DESTINATION src)
 
 set(DBRADIO
     tools/dbradio.c
