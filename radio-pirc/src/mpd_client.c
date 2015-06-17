@@ -47,43 +47,6 @@ int mpd_put_current_radio(char *buffer);
 int mpd_db_update_current_song_rating(int increase);
 int mpd_put_artist_art(char *buffer, char *artist);
 
-int mpd_crop(struct mpd_connection *conn)
-{
-    struct mpd_status *status = mpd_run_status(conn);
-    if (status == 0)
-        return 0;
-    int length = mpd_status_get_queue_length(status) - 1;
-
-    if (length < 0) {
-        mpd_status_free(status);
-        syslog(LOG_INFO, "%s: A playlist longer than 1 song in length is required to crop.\n", __func__);
-    } else if (mpd_status_get_state(status) == MPD_STATE_PLAY ||
-            mpd_status_get_state(status) == MPD_STATE_PAUSE) {
-        if (!mpd_command_list_begin(conn, false)) {
-            syslog(LOG_ERR, "%s: mpd_command_list_begin failed\n", __func__);
-            return 0; //printErrorAndExit(conn);
-        }
-
-        for (; length >= 0; --length)
-            if (length != mpd_status_get_song_pos(status))
-                mpd_send_delete(conn, length);
-
-        mpd_status_free(status);
-
-        if (!mpd_command_list_end(conn) || !mpd_response_finish(conn)) {
-            syslog(LOG_ERR, "%s: mpd_command_list_end || mpd_response_finish failed\n", __func__);
-            return 0; //printErrorAndExit(conn);
-        }
-
-        return 0;
-    } else {
-        mpd_status_free(status);
-        syslog(LOG_INFO, "%s: You need to be playing to crop the playlist\n", __func__);
-        return 0;
-    }
-    return 1;
-}
-
 static inline enum mpd_cmd_ids get_cmd_id(char *cmd)
 {
     for(int i = 0; i < sizeof(mpd_cmd_strs)/sizeof(mpd_cmd_strs[0]); i++)

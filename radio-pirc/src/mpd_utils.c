@@ -8,6 +8,43 @@
 #include "sqlitedb.h"
 #include "radio.h"
 
+int mpd_crop(struct mpd_connection *conn)
+{
+    struct mpd_status *status = mpd_run_status(conn);
+    if (status == 0)
+        return 0;
+    int length = mpd_status_get_queue_length(status) - 1;
+
+    if (length < 0) {
+        mpd_status_free(status);
+        syslog(LOG_INFO, "%s: A playlist longer than 1 song in length is required to crop.\n", __func__);
+    } else if (mpd_status_get_state(status) == MPD_STATE_PLAY ||
+            mpd_status_get_state(status) == MPD_STATE_PAUSE) {
+        if (!mpd_command_list_begin(conn, false)) {
+            syslog(LOG_ERR, "%s: mpd_command_list_begin failed\n", __func__);
+            return 0; //printErrorAndExit(conn);
+        }
+
+        for (; length >= 0; --length)
+            if (length != mpd_status_get_song_pos(status))
+                mpd_send_delete(conn, length);
+
+        mpd_status_free(status);
+
+        if (!mpd_command_list_end(conn) || !mpd_response_finish(conn)) {
+            syslog(LOG_ERR, "%s: mpd_command_list_end || mpd_response_finish failed\n", __func__);
+            return 0; //printErrorAndExit(conn);
+        }
+
+        return 0;
+    } else {
+        mpd_status_free(status);
+        syslog(LOG_INFO, "%s: You need to be playing to crop the playlist\n", __func__);
+        return 0;
+    }
+    return 1;
+}
+
 int mpd_list_artists(struct mpd_connection *conn)
 {
     int num = 0;
@@ -101,7 +138,7 @@ void get_random_song(struct mpd_connection *conn, char *str, char *path)
     mpd_stats_free(stats);
     skipnum = rand() % numberofsongs;
 
-    syslog(LOG_DEBUG, "%s: path %s; number of songs: %i skip: %i\n", 
+    syslog(LOG_DEBUG, "%s: path %s; number of songs: %i skip: %i\n",
             __func__, path, numberofsongs, skipnum);
     if (!mpd_send_list_all_meta(conn, ""))//path))
     {
@@ -116,9 +153,9 @@ void get_random_song(struct mpd_connection *conn, char *str, char *path)
         const struct mpd_song *song;
         if (mpd_entity_get_type(entity) == MPD_ENTITY_TYPE_SONG)
         {
-            if (skipnum-- > 0) 
+            if (skipnum-- > 0)
                 continue;
-            
+
             int listened;
             song = mpd_entity_get_song(entity);
             listened = db_get_song_numplayed(mpd_get_title(song),
@@ -126,8 +163,8 @@ void get_random_song(struct mpd_connection *conn, char *str, char *path)
             if (listened < listened0) {
                 listened0 = listened;
                 syslog(LOG_DEBUG, "listened: %i ", listened);
-                int probability = 50 + 
-                    db_get_song_rating(mpd_get_title(song), 
+                int probability = 50 +
+                    db_get_song_rating(mpd_get_title(song),
                             mpd_get_artist(song));
                 syslog(LOG_DEBUG, "probability: %i ", probability);
                 bool Yes = (rand() % 100) < probability;
