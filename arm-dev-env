@@ -4,3 +4,4 @@ libwebkitgtk-dev
 libcurl4-gnutls-dev
 libsqlite3-dev
 libmad0-dev libogg-dev libvorbis-dev libid3tag0-dev
+flex bison
