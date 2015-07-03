@@ -165,3 +165,26 @@ int radio_get_status()
 {
     return rcm.radio_status;
 }
+
+int delete_file_forever(char* uri)
+{
+    char *music_path = NULL;
+    char path[128];
+
+    if (!config_lookup_string(&rcm.cfg, "application.music_path", &music_path))
+    {
+        syslog(LOG_ERR, "%s: No 'application.music_path' setting in configuration file.\n", __func__);
+        return -1;
+    }
+    if (!uri) {
+        char song[128];
+//TODO:        db_get_worst_song(&mpd.conn, song);
+        sprintf(path, "%s%s", music_path, song);
+        syslog(LOG_INFO, "%s: %s\n", __func__, path);
+    } else {
+        sprintf(path, "%s%s", music_path, uri);
+        syslog(LOG_INFO, "%s: path: %s\n", __func__, path);
+    }
+
+    return remove(path);
+}

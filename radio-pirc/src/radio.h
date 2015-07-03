@@ -38,4 +38,6 @@ void radio_stop();
 int radio_toggle();
 int radio_get_status();
 
+int delete_file_forever(char* uri);
+
 #endif

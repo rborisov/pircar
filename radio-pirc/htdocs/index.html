@@ -10,9 +10,9 @@
         <script src="js/player.js"></script>
         <style>
             * {
-                 -moz-user-select: none; 
-                 -webkit-user-select: none; 
-                 -ms-user-select:none; 
+                 -moz-user-select: none;
+                 -webkit-user-select: none;
+                 -ms-user-select:none;
                  user-select:none;
                  -o-user-select:none;
 
@@ -184,6 +184,8 @@
                     onclick="location.href='music_search.html'"></li>
                     <li class="glyphicon glyphicon-globe"
                     onclick="location.href='list.html'"></li>
+                    <li class="glyphicon glyphicon-floppy-remove"
+                    onclick="socket.send('TEST_DELETE_FILE');"></li>
                 </ul>
             </div>
             <div id="container" style="position: absolute; top: 140px; left: 0;">

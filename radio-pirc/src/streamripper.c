@@ -270,26 +270,6 @@ void catch_sig(int code)
 }
 */
 
-void delete_file_forever(char* uri)
-{
-    if (!uri) {
-        char *music_path = NULL;
-        char path[128], song[128];
-        if (!config_lookup_string(&rcm.cfg, "application.music_path", &music_path))
-        {
-            syslog(LOG_ERR, "%s: No 'application.music_path' setting in configuration file.\n", __func__);
-            return;
-        }
-//TODO:        db_get_worst_song(&mpd.conn, song);
-        sprintf(path, "%s%s", music_path, song);
-        syslog(LOG_INFO, "%s: %s\n", __func__, path);
-        remove(path);
-    } else {
-        remove(uri);
-    }
-}
-
-
 /*
  * This will get called whenever anything interesting happens with the
  * stream. Interesting are progress updates, error's, when the rip
