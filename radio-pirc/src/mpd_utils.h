@@ -14,4 +14,6 @@ int mpd_list_artists(struct mpd_connection *conn);
 char* mpd_get_artist(struct mpd_song const *song);
 void get_worst_song(struct mpd_connection *conn, char *str);
 
+int mpd_delete_current_song(struct mpd_connection *conn);
+
 #endif

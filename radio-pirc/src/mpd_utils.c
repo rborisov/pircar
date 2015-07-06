@@ -216,3 +216,25 @@ int get_current_song_rating()
     mpd_song_free(song);
     return rating;
 }
+
+int mpd_delete_current_song(struct mpd_connection *conn)
+{
+    struct mpd_song *song;
+    char *currentsonguri = NULL;
+
+    song = mpd_run_current_song(conn);
+    if(song == NULL)
+        return 0;
+
+    db_update_song_rating(mpd_get_title(song),
+            mpd_song_get_tag(song, MPD_TAG_ARTIST, 0), -5);
+
+    currentsonguri = mpd_song_get_uri(song);
+    printf("%s: let's delete song: %s\n", __func__, currentsonguri);
+
+    delete_file_forever(currentsonguri);
+
+    mpd_song_free(song);
+
+    return 1;
+}

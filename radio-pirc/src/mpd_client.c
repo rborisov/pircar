@@ -161,8 +161,8 @@ int callback_mpd(struct mg_connection *c)
     unsigned int uint_buf, uint_buf_2;
     int int_buf;
     char *p_charbuf = NULL;
-    char *currentsonguri = NULL;
-    struct mpd_song *song;
+//    char *currentsonguri = NULL;
+//    struct mpd_song *song;
 
 printf("%s\n", c->content);
     if(cmd_id == -1)
@@ -353,14 +353,15 @@ printf("%s\n", c->content);
             }
             break;
         case TEST_DELETE_FILE:
-            song = mpd_run_current_song(mpd.conn);
+/*            song = mpd_run_current_song(mpd.conn);
             if(song == NULL) {
                 printf("can't find current song to delete\n");
                 break;
             }
             currentsonguri = mpd_song_get_uri(song);
             printf("let's delete song: %s\n", currentsonguri);
-            delete_file_forever(currentsonguri);
+            delete_file_forever(currentsonguri);*/
+            mpd_delete_current_song(mpd.conn);
             break;
 #ifdef WITH_MPD_HOST_CHANGE
         /* Commands allowed when disconnected from MPD server */

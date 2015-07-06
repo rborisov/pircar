@@ -122,6 +122,4 @@ int mpd_put_radio(char *buffer, unsigned int offset);
 int mpd_put_browse(char *buffer, char *path, unsigned int offset);
 int mpd_search(char *buffer, char *searchstr);
 void mpd_disconnect();
-
-void delete_file_forever(char *);
 #endif
