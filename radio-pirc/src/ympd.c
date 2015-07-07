@@ -108,6 +108,8 @@ int main(int argc, char **argv)
         init_streamripper();
         rcm.radio_status = 1;
         syslog(LOG_INFO, "init_streamripper\n");
+        syslog(LOG_INFO, "radio ON; crossfade OFF\n");
+        mpd_run_crossfade(mpd.conn, 0);
     }
 
     mg_set_http_close_handler(server, mpd_close_handler);
@@ -119,15 +121,20 @@ int main(int argc, char **argv)
         {
             last_timer = current_timer;
             mpd_poll(server);
-            if (www_online()) {
-                if (radio_get_status() == 1) {
+            if (radio_get_status() == 1) {
+                if (www_online()) {
                     if (poll_streamripper(radio_song_name))
                     {
+                        //new song ripped. lets add it to mpd queue
                         mpd_run_update(mpd.conn, radio_song_name);
                         sleep(1);
                         mpd_run_add(mpd.conn, radio_song_name);
                         //mpd_insert(mpd.conn, radio_song_name);
                     }
+                } else {
+                    syslog(LOG_INFO, "NO INTERNET: stop streamripper");
+                    stop_streamripper();
+                    mpd_run_crossfade(mpd.conn, 2);
                 }
             }
         }
