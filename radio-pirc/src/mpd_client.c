@@ -213,8 +213,14 @@ printf("%s\n", c->content);
             }
             break;
         case MPD_API_TOGGLE_RADIO:
-            syslog(LOG_INFO, "%s: RADIO_TOGGLE_RADIO %i\n", __func__, radio_get_status());
-            radio_toggle();
+            syslog(LOG_INFO, "%s: RADIO_TOGGLE_RADIO status: %i\n", __func__, radio_get_status());
+            if (radio_toggle()) {
+                printf("radio ON; crossfade OFF\n");
+                mpd_run_crossfade(mpd.conn, 0);
+            } else {
+                printf("radio OFF; crossfade ON\n");
+                mpd_run_crossfade(mpd.conn, 2); //TODO: number of secs(2) -> config
+            }
             printf("%s: file_path - %s\n", __func__, rcm.file_path);
             sprintf(rcm.rnd_path, "%s", rcm.file_path);
             break;

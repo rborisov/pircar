@@ -120,7 +120,7 @@ int main(int argc, char **argv)
             last_timer = current_timer;
             mpd_poll(server);
             if (www_online()) {
-                if (rcm.radio_status == 1) {
+                if (radio_get_status() == 1) {
                     if (poll_streamripper(radio_song_name))
                     {
                         mpd_run_update(mpd.conn, radio_song_name);
@@ -133,7 +133,7 @@ int main(int argc, char **argv)
         }
     }
 
-    if (rcm.radio_status == 1)
+    if (radio_get_status() == 1)
         stop_streamripper();
     db_close();
 
