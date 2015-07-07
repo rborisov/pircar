@@ -66,6 +66,10 @@ int main(int argc, char **argv)
     char radio_song_name[512] = "";
     struct passwd *pw = getpwuid(getuid());
     char *homedir = pw->pw_dir;
+    struct timeval t1;
+
+    gettimeofday(&t1, NULL);
+    srand(t1.tv_usec * t1.tv_sec);
 
     rcm_init();
     rcm.last_timer = 0;
