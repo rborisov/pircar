@@ -660,7 +660,7 @@ int mpd_put_state(char *buffer, int *current_song_id, unsigned *queue_version)
         " \"songpos\":%d, \"nextsongpos\":%d, "
         " \"elapsedTime\":%d, \"totalTime\":%d, "
         " \"currentsongid\":%d, \"radio_status\":%d, \"queue_len\":%d, "
-        " \"songrating\":%d"
+        " \"songrating\":%d, \"www_state\":%d"
         "}}",
         mpd_status_get_state(status),
         mpd.volume,
@@ -674,7 +674,8 @@ int mpd_put_state(char *buffer, int *current_song_id, unsigned *queue_version)
         mpd_status_get_song_id(status),
         radio_get_status(),
         queue_len,
-        get_current_song_rating());
+        get_current_song_rating(),
+        www_state());
 
     *current_song_id = mpd_status_get_song_id(status);
     *queue_version = mpd_status_get_queue_version(status);

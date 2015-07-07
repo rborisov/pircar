@@ -84,6 +84,7 @@ function webSocketConnect() {
                     updateRadioIcon(obj.data.radio_status);
                     updateRandomIcon(obj.data.random);
                     updateRepeatIcon(obj.data.repeat);
+                    updateWWWIcon(obj.data.www_state);
 
                     if(JSON.stringify(obj) === JSON.stringify(last_state))
                         break;
@@ -360,6 +361,17 @@ var updateRepeatIcon = function(repeat)
         $("#repeat-icon").addClass('glyphicon-play-circle');
     } else {
         $("#repeat-icon").addClass('glyphicon-repeat');
+    }
+}
+
+var updateWWWIcon = function(www_state)
+{
+    $("#www-state").removeClass('glyphicon-plane')
+    .removeClass("glyphicon-globe");
+    if (www_state == 0) {
+        $("#www-state").addClass('glyphicon-plane');
+    } else {
+        $("#www-state").addClass('glyphicon-globe');
     }
 }
 

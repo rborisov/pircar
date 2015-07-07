@@ -32,6 +32,7 @@ void cfg_set_radio_status(int status);
 
 //check internet connection
 void *www_online();
+int www_state();
 
 void radio_start();
 void radio_stop();

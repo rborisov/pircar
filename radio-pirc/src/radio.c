@@ -137,6 +137,11 @@ void *www_online()
     return (void *) 0; // no internet
 }
 
+int www_state()
+{
+    return rcm.online;
+}
+
 void radio_start()
 {
     streamripper_set_url_dest(NULL);

@@ -109,7 +109,7 @@ int main(int argc, char **argv)
         rcm.radio_status = 1;
         syslog(LOG_INFO, "init_streamripper\n");
         syslog(LOG_INFO, "radio ON; crossfade OFF\n");
-        mpd_run_crossfade(mpd.conn, 0);
+//        mpd_run_crossfade(mpd.conn, 0);
     }
 
     mg_set_http_close_handler(server, mpd_close_handler);
@@ -134,7 +134,7 @@ int main(int argc, char **argv)
                 } else {
                     syslog(LOG_INFO, "NO INTERNET: stop streamripper");
                     stop_streamripper();
-                    mpd_run_crossfade(mpd.conn, 2);
+            //        mpd_run_crossfade(mpd.conn, 2);
                 }
             }
         }
