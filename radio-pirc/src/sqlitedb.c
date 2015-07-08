@@ -87,9 +87,29 @@ int db_get_radio_name_next(char* name)
 
 }
 
-void db_get_rnd_song_first(char* name)
-{
+static int del_callback(void *data, int argc, char **argv, char **azColName){
+   int i;
+//   fprintf(stderr, "%s: ", (const char*)data);
+   for(i=0; i<argc; i++){
+      printf("%s = %s\n", azColName[i], argv[i] ? argv[i] : "NULL");
+   }
+   printf("\n");
+   return 0;
+}
 
+int db_get_songs_by_rating()
+{
+    int rc;
+    char *zErrMessage = 0;
+    rc = sqlite3_exec(conn, "SELECT song,artist FROM Songs ORDER BY rating ASC",
+            del_callback, NULL, &zErrMessage);
+    if( rc != SQLITE_OK ){
+        printf("SQL error: %s\n", zErrMessage);
+        return -1;
+    } else {
+        printf("Operation done successfully\n");
+    }
+    return 0;
 }
 
 /*
