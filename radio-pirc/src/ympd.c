@@ -121,21 +121,21 @@ int main(int argc, char **argv)
         {
             last_timer = current_timer;
             mpd_poll(server);
-            if (radio_get_status() == 1) {
-                if (www_online()) {
-                    if (poll_streamripper(radio_song_name))
-                    {
-                        //new song ripped. lets add it to mpd queue
-                        mpd_run_update(mpd.conn, radio_song_name);
-                        sleep(1);
-                        mpd_run_add(mpd.conn, radio_song_name);
-                        //mpd_insert(mpd.conn, radio_song_name);
-                    }
-                } else {
-                    syslog(LOG_INFO, "NO INTERNET: stop streamripper");
-                    stop_streamripper();
-            //        mpd_run_crossfade(mpd.conn, 2);
+            if (www_online() && radio_get_status() == 1) {
+    //            if (www_online()) {
+                if (poll_streamripper(radio_song_name))
+                {
+                    //new song ripped. lets add it to mpd queue
+                    mpd_run_update(mpd.conn, radio_song_name);
+                    sleep(1);
+                    mpd_run_add(mpd.conn, radio_song_name);
+                    //mpd_insert(mpd.conn, radio_song_name);
                 }
+            } else {
+//                syslog(LOG_INFO, "NO INTERNET: stop streamripper");
+                stop_streamripper();
+                //        mpd_run_crossfade(mpd.conn, 2);
+                //                }
             }
         }
     }

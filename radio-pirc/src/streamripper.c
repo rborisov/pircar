@@ -254,9 +254,15 @@ int poll_streamripper(char* newfilename)
 
 int stop_streamripper()
 {
-    syslog(LOG_INFO, "%s: stop_streamripper\n", __func__);
-    rip_manager_stop (rmi);
-    rip_manager_cleanup ();
+    if (rmi)
+    {
+        if (rmi->started) 
+        {
+            syslog(LOG_INFO, "%s: stop_streamripper\n", __func__);
+            rip_manager_stop (rmi);
+            rip_manager_cleanup ();
+        }
+    }
 
     return 0;
 }

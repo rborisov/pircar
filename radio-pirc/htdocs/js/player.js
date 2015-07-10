@@ -366,13 +366,19 @@ var updateRepeatIcon = function(repeat)
 
 var updateWWWIcon = function(www_state)
 {
-    $("#www-state").removeClass('glyphicon-plane')
+    var cloud_icon = document.getElementById('cloud-icon');
+    if (www_state == 0) {
+        clould_icon.style.color = 'red';
+    } else {
+        cloud_icon.style.color = 'yellowgreen';
+    }
+/*    $("#www-state").removeClass('glyphicon-plane')
     .removeClass("glyphicon-globe");
     if (www_state == 0) {
         $("#www-state").addClass('glyphicon-plane');
     } else {
         $("#www-state").addClass('glyphicon-globe');
-    }
+    }*/
 }
 
 function updateDB() {
