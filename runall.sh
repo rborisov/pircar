@@ -17,4 +17,4 @@ if [ "${RESULT:-null}" = null ]; then
 else
     echo "browser-pirc already running"
 fi
-tail -f /var/log/syslog
+tail -f /var/log/syslog | grep rcm

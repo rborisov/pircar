@@ -148,11 +148,11 @@ int main(int argc, char **argv)
     char songname[180] = "";
     int rat = 0;
 
-    int rc = sqlite3_open("/media/storage/rcardb.sqlite", &db);
+    int rc = sqlite3_open("/media/500gb/rcardb.sqlite", &db);
 
     if (rc != SQLITE_OK) {
 
-        fprintf(stderr, "Cannot open database: %s\n", sqlite3_errmsg(db));
+        printf("Cannot open database: %s\n", sqlite3_errmsg(db));
         sqlite3_close(db);
 
         return 1;

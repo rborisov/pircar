@@ -97,21 +97,6 @@ static int del_callback(void *data, int argc, char **argv, char **azColName){
    return 0;
 }
 
-int db_get_songs_by_rating()
-{
-    int rc;
-    char *zErrMessage = 0;
-    rc = sqlite3_exec(conn, "SELECT song,artist FROM Songs ORDER BY rating ASC",
-            del_callback, NULL, &zErrMessage);
-    if( rc != SQLITE_OK ){
-        printf("SQL error: %s\n", zErrMessage);
-        return -1;
-    } else {
-        printf("Operation done successfully\n");
-    }
-    return 0;
-}
-
 /*
  * get numplayed from Songs or 0 when error
  */
@@ -201,6 +186,47 @@ int db_update_song_album(char* song, char* artist, char* album)
             rc = 1;
     }
     return rc;
+}
+
+char *db_get_song_name(int id)
+{
+    sqlite3_free(sqlchar0);
+    sqlchar0 = sql_get_text_field(conn, "SELECT song FROM Songs WHERE id = '%d'", id);
+    return sqlchar0;
+}
+
+char *db_get_song_artist(int id)
+{
+    sqlite3_free(sqlchar1);
+    sqlchar1 = sql_get_text_field(conn, "SELECT artist FROM Songs WHERE id = '%d'", id);
+    return sqlchar1;
+}
+
+int db_get_prior_song_by_rating_first(int *id)
+{
+    int rc;
+    rc = sqlite3_prepare_v2(db, "SELECT id, rating FROM Songs ORDER by numplayed", -1, &res, 0);
+
+    if (rc == SQLITE_OK) {
+        if (sqlite3_step(res) == SQLITE_ROW) {
+            id = sqlite3_column_int(res, 0);
+            return sqlite3_column_int(res, 1);
+        }
+    }
+    sqlite3_finalize(res);
+
+    return 0;
+}
+
+int db_get_song_by_rating_next(int *id)
+{
+    if (sqlite3_step(res) == SQLITE_ROW) {
+        id = sqlite3_column_int(res, 0);
+        return sqlite3_column_int(res, 1);
+    }
+    sqlite3_finalize(res);
+
+    return 0;
 }
 
 int db_get_song_rating(char* song, char* artist)
