@@ -365,9 +365,9 @@ printf("%s\n", c->content);
                 break;
             }
             currentsonguri = mpd_song_get_uri(song);
-            printf("let's delete song: %s\n", currentsonguri);
-            delete_file_forever(currentsonguri);*/
-            mpd_delete_current_song(mpd.conn);
+            printf("let's delete song: %s\n", currentsonguri);*/
+            delete_file_forever(NULL);
+//            mpd_delete_current_song(mpd.conn);
             break;
 #ifdef WITH_MPD_HOST_CHANGE
         /* Commands allowed when disconnected from MPD server */

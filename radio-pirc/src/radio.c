@@ -6,6 +6,7 @@
 #include <unistd.h>
 
 #include "radio.h"
+#include "sqlitedb.h"
 
 int rcm_init()
 {
@@ -183,7 +184,15 @@ int delete_file_forever(char* uri)
     }
     if (!uri) {
         char song[128];
+        int id, rating;
 //TODO:        db_get_worst_song(&mpd.conn, song);
+
+        id = db_get_prior_song_by_rating_first();
+        while (id) {
+            printf("%i %s %s\n", id, db_get_song_name(id), db_get_song_artist(id));
+            id = db_get_song_by_rating_next();
+        };
+
         sprintf(path, "%s%s", music_path, song);
         syslog(LOG_INFO, "%s: %s\n", __func__, path);
     } else {
