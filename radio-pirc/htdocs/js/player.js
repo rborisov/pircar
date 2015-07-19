@@ -368,7 +368,7 @@ var updateWWWIcon = function(www_state)
 {
     var cloud_icon = document.getElementById('cloud-icon');
     if (www_state == 0) {
-        clould_icon.style.color = 'red';
+        cloud_icon.style.color = 'red';
     } else {
         cloud_icon.style.color = 'yellowgreen';
     }
