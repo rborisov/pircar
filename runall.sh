@@ -13,7 +13,7 @@ else
 fi
 RESULT=`pgrep browser-pirc`
 if [ "${RESULT:-null}" = null ]; then
-    ./build/browser-pirc/browser-pirc -w 320 -h 240 &
+    ./build/browser-pirc/browser-pirc -w 480 -h 320 &
 else
     echo "browser-pirc already running"
 fi
