@@ -150,7 +150,6 @@ function webSocketConnect() {
                                             console.log(art_url);
                                             artimage.src = art_url;
                                         } else {
-                                            //artimage.src = "/images/art.jpg";
                                             console.log("there is no track.album.image");
                                             //socket.send('MPD_API_DB_GET_ARTIST,'+obj.data.artist);
                                         }
@@ -214,6 +213,7 @@ function webSocketConnect() {
                     console.log(obj.data);
                     updateNotificationIcon(1);
                 default:
+                    updateNotificationIcon(0);
                     break;
             }
 
