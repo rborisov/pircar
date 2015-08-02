@@ -1,5 +1,7 @@
 #!/bin/sh
-path=`curl rcm.rborisov.me/debdw.php?cpu=i686`
+cpuname=`uname -m`
+echo $cpuname
+path=`curl rcm.rborisov.me/debdw.php?cpu=$cpuname`
 file=`basename $path`
 echo $file
 [ ! -f $file ] && wget $path
