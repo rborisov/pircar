@@ -121,7 +121,8 @@ int main(int argc, char **argv)
         {
             last_timer = current_timer;
             mpd_poll(server);
-            if (www_online() && radio_get_status() == 1) {
+	    www_online();
+            if (radio_get_status() == 1) {
     //            if (www_online()) {
                 if (poll_streamripper(radio_song_name))
                 {

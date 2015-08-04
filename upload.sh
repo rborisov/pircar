@@ -1,3 +1,6 @@
 #!/bin/sh
-
-curl -F file=@build/pircar-1.0.1-1.armv6l.deb http://rcm.rborisov.me/debup.php
+for i in ./*.deb
+do
+echo $i
+curl -F file=@$i http://rcm.rborisov.me/debup.php
+done
