@@ -163,6 +163,7 @@ int callback_mpd(struct mg_connection *c)
     char *p_charbuf = NULL;
 //    char *currentsonguri = NULL;
 //    struct mpd_song *song;
+		char badsong[128];
 
 printf("%s\n", c->content);
     if(cmd_id == -1)
@@ -366,6 +367,8 @@ printf("%s\n", c->content);
             }
             currentsonguri = mpd_song_get_uri(song);
             printf("let's delete song: %s\n", currentsonguri);*/
+		get_song_to_delete(badsong);
+		printf("badsong: %s\n", badsong);
             delete_file_forever(NULL);
 //            mpd_delete_current_song(mpd.conn);
             break;

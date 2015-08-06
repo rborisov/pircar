@@ -5,13 +5,17 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/../cmake/")
 set(CPACK_PACKAGE_VERSION_MAJOR "1")
 set(CPACK_PACKAGE_VERSION_MINOR "2")
 set(CPACK_PACKAGE_VERSION_PATCH "2")
+set(USERNAME "rborisov")
 
-install(FILES "${PROJECT_SOURCE_DIR}/mpd" 
+install(FILES "${PROJECT_SOURCE_DIR}/../mpd/src/mpd" 
 	PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ 
 		    GROUP_EXECUTE GROUP_READ
 		    WORLD_EXECUTE WORLD_READ
 	DESTINATION bin)
-install(CODE "execute_process(COMMAND sudo chown rborisov ${PROJECT_SOURCE_DIR}/mpd.conf)")
-install(FILES "${PROJECT_SOURCE_DIR}/mpd.conf" DESTINATION ../etc)
-install(FILES "${PROJECT_SOURCE_DIR}/ympd.conf" DESTINATION ../etc)
-#install(CODE "execute_process(COMMAND chown rborisov ${DESTINATION}../etc/mpd.conf)")
+install(CODE "execute_process(COMMAND sudo chown ${USERNAME} ${PROJECT_SOURCE_DIR}/mpd.conf)")
+install(FILES "${PROJECT_SOURCE_DIR}/mpd.conf" DESTINATION "/storage/.mpd")
+install(FILES "${PROJECT_SOURCE_DIR}/runmefirst.sh" 
+        PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ 
+                    GROUP_EXECUTE GROUP_READ
+                    WORLD_EXECUTE WORLD_READ
+	DESTINATION "/home/${USERNAME}/")

@@ -5,8 +5,10 @@
 #include <string.h>
 #include <unistd.h>
 
+#include "mpd_utils.h"
 #include "radio.h"
-#include "sqlitedb.h"
+//#include "sqlitedb.h"
+#include "streamripper.h"
 
 int rcm_init()
 {
@@ -185,7 +187,7 @@ int delete_file_forever(char* uri)
     if (!uri) {
         char song[128];
         int id, rating;
-//TODO:        db_get_worst_song(&mpd.conn, song);
+//        get_song_to_delete(song);
 
         id = db_get_prior_song_by_rating_first();
         while (id) {

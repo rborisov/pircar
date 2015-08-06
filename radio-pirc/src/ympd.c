@@ -24,6 +24,7 @@
 #include <sys/time.h>
 #include <pthread.h>
 #include <pwd.h>
+#include <sys/statvfs.h>
 
 #include "mongoose.h"
 #include "http_server.h"
@@ -56,6 +57,21 @@ static int server_callback(struct mg_connection *c) {
     }
     else
         return callback_http(c);
+}
+
+long GetAvailableSpace(const char* path)
+{
+  struct statvfs stat;
+  
+  if (statvfs(path, &stat) != 0) {
+    // error happens, just quits here
+    syslog(LOG_INFO, "%s error\n", __func__);
+    return -1;
+  }
+
+  // the available size is f_bsize * f_bavail
+  syslog(LOG_INFO, "%s available space: %i\n", __func__, stat.f_bsize * stat.f_bavail);
+  return stat.f_bsize * stat.f_bavail;
 }
 
 int main(int argc, char **argv)
@@ -91,8 +107,6 @@ int main(int argc, char **argv)
         return(EXIT_FAILURE);
     }
 
-    //TODO: read mpd.radio_status from config
-
     /* drop privilges at last to ensure proper port binding */
     if(run_as_user != NULL)
     {
@@ -122,6 +136,9 @@ int main(int argc, char **argv)
             last_timer = current_timer;
             mpd_poll(server);
 	    www_online();
+/*            while (GetAvailableSpace("/storage") < 300*1000*1000) {
+                delete_file_forever(NULL);
+            }*/
             if (radio_get_status() == 1) {
     //            if (www_online()) {
                 if (poll_streamripper(radio_song_name))

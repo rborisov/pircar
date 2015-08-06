@@ -2,11 +2,12 @@
 #include <string.h>
 #include <stdlib.h>
 #include <libgen.h>
+#include <syslog.h>
 
 #include "mpd_client.h"
 #include "mpd_utils.h"
 #include "sqlitedb.h"
-#include "radio.h"
+//#include "radio.h"
 
 int mpd_crop(struct mpd_connection *conn)
 {
@@ -180,15 +181,15 @@ void get_random_song(struct mpd_connection *conn, char *str, char *path)
     }
 }
 
-void get_worst_song(struct mpd_connection *conn, char *str)
+void get_song_to_delete(char *str)
 {
     struct mpd_entity *entity;
     int rating0 = 65000;
-    if (!mpd_send_list_meta(conn, "/")) {
+    if (!mpd_send_list_meta(mpd.conn, "/")) {
         syslog(LOG_DEBUG, "error: mpd_send_list_meta\n");
         return;
     }
-    while((entity = mpd_recv_entity(conn)) != NULL) {
+    while((entity = mpd_recv_entity(mpd.conn)) != NULL) {
         if (mpd_entity_get_type(entity) == MPD_ENTITY_TYPE_SONG) {
             const struct mpd_song *song = mpd_entity_get_song(entity);
             int rating = db_get_song_rating(mpd_get_title(song),
