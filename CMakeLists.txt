@@ -16,9 +16,9 @@ set(CMAKE_SYSTEM_VERSION 1)
 
 set (INSTALL_DIR "/usr")
 
-#add_subdirectory ( ubuntu1404 )
+add_subdirectory ( ubuntu1404 )
 #add_subdirectory ( indi-pirc )
-add_subdirectory ( browser-pirc )
+#add_subdirectory ( browser-pirc )
 add_subdirectory ( radio-pirc )
 
 set(CPACK_PACKAGE_VERSION ${VERSION})
