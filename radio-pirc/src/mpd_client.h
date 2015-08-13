@@ -39,7 +39,6 @@
 #define MPD_CMDS(X) \
     X(MPD_API_GET_QUEUE) \
     X(MPD_API_GET_BROWSE) \
-    X(MPD_API_GET_MPDHOST) \
     X(MPD_API_ADD_TRACK) \
     X(MPD_API_ADD_PLAY_TRACK) \
     X(MPD_API_ADD_PLAYLIST) \
@@ -54,8 +53,6 @@
     X(MPD_API_SET_SEEK) \
     X(MPD_API_SET_NEXT) \
     X(MPD_API_SET_PREV) \
-    X(MPD_API_SET_MPDHOST) \
-    X(MPD_API_SET_MPDPASS) \
     X(MPD_API_UPDATE_DB) \
     X(MPD_API_TOGGLE_RANDOM) \
     X(MPD_API_TOGGLE_CONSUME) \
@@ -88,10 +85,6 @@ enum mpd_conn_states {
 };
 
 struct t_mpd {
-    int port;
-    char host[128];
-    char *password;
-
     struct mpd_connection *conn;
     enum mpd_conn_states conn_state;
 

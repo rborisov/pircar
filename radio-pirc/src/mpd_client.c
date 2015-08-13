@@ -163,14 +163,13 @@ int callback_mpd(struct mg_connection *c)
     char *p_charbuf = NULL;
 //    char *currentsonguri = NULL;
 //    struct mpd_song *song;
-		char badsong[128];
+    char badsong[128];
 
-printf("%s\n", c->content);
+    printf("%s\n", c->content);
     if(cmd_id == -1)
         return MG_CLIENT_CONTINUE;
 
-    if(mpd.conn_state != MPD_CONNECTED && cmd_id != MPD_API_SET_MPDHOST &&
-        cmd_id != MPD_API_GET_MPDHOST && cmd_id != MPD_API_SET_MPDPASS)
+    if(mpd.conn_state != MPD_CONNECTED)
         return MG_CLIENT_CONTINUE;
 
     mpd_connection_set_timeout(mpd.conn, 10000);
@@ -367,42 +366,11 @@ printf("%s\n", c->content);
             }
             currentsonguri = mpd_song_get_uri(song);
             printf("let's delete song: %s\n", currentsonguri);*/
-		get_song_to_delete(badsong);
-		printf("badsong: %s\n", badsong);
+    get_song_to_delete(badsong);
+    printf("badsong: %s\n", badsong);
             delete_file_forever(NULL);
 //            mpd_delete_current_song(mpd.conn);
             break;
-#ifdef WITH_MPD_HOST_CHANGE
-        /* Commands allowed when disconnected from MPD server */
-        case MPD_API_SET_MPDHOST:
-            int_buf = 0;
-            if(sscanf(c->content, "MPD_API_SET_MPDHOST,%d,%m[^\t\n ]", &int_buf, &p_charbuf) &&
-                p_charbuf != NULL && int_buf > 0)
-            {
-                strncpy(mpd.host, p_charbuf, sizeof(mpd.host));
-                free(p_charbuf);
-                mpd.port = int_buf;
-                mpd.conn_state = MPD_RECONNECT;
-                return MG_CLIENT_CONTINUE;
-            }
-            break;
-        case MPD_API_GET_MPDHOST:
-            n = snprintf(mpd.buf, MAX_SIZE, "{\"type\":\"mpdhost\", \"data\": "
-                "{\"host\" : \"%s\", \"port\": \"%d\", \"passwort_set\": %s}"
-                "}", mpd.host, mpd.port, mpd.password ? "true" : "false");
-            break;
-        case MPD_API_SET_MPDPASS:
-            if(sscanf(c->content, "MPD_API_SET_MPDPASS,%m[^\t\n ]", &p_charbuf))
-            {
-                if(mpd.password)
-                    free(mpd.password);
-
-                mpd.password = p_charbuf;
-                mpd.conn_state = MPD_RECONNECT;
-                return MG_CLIENT_CONTINUE;
-            }
-            break;
-#endif
     }
 
     if(mpd.conn_state == MPD_CONNECTED && mpd_connection_get_error(mpd.conn) != MPD_ERROR_SUCCESS)
@@ -514,37 +482,31 @@ void mpd_poll(struct mg_server *s)
     switch (mpd.conn_state) {
         case MPD_DISCONNECTED:
             /* Try to connect */
-            syslog(LOG_INFO, "MPD Connecting to %s:%d\n", mpd.host, mpd.port);
-            mpd.conn = mpd_connection_new(mpd.host, mpd.port, 3000);
+            //syslog(LOG_INFO, "MPD Connecting to %s:%d\n", mpd.host, mpd.port);
+            syslog(LOG_INFO, "%s - MPD Connecting...\n", __func__);
+            //mpd.conn = mpd_connection_new(mpd.host, mpd.port, 3000);
+            mpd.conn = mpd_connection_new(NULL, NULL, 3000);
             if (mpd.conn == NULL) {
-                syslog(LOG_ERR, "Out of memory.");
+                syslog(LOG_ERR, "%s - Out of memory.", __func__);
                 mpd.conn_state = MPD_FAILURE;
                 return;
             }
 
             if (mpd_connection_get_error(mpd.conn) != MPD_ERROR_SUCCESS) {
-                syslog(LOG_ERR, "MPD connection: %s\n", mpd_connection_get_error_message(mpd.conn));
+                syslog(LOG_ERR, "%s - MPD connection: %s\n", __func__,
+                    mpd_connection_get_error_message(mpd.conn));
                 mg_iterate_over_connections(s, mpd_notify_callback,
                     (void *)mpd_connection_get_error_message(mpd.conn));
                 mpd.conn_state = MPD_FAILURE;
                 return;
             }
 
-            if(mpd.password && !mpd_run_password(mpd.conn, mpd.password))
-            {
-                syslog(LOG_ERR, "MPD connection: %s\n", mpd_connection_get_error_message(mpd.conn));
-                mg_iterate_over_connections(s, mpd_notify_callback,
-                    (void *)mpd_connection_get_error_message(mpd.conn));
-                mpd.conn_state = MPD_FAILURE;
-                return;
-            }
-
-            syslog(LOG_ERR, "MPD connected.\n");
+            syslog(LOG_INFO, "%s - MPD connected.\n", __func__);
             mpd.conn_state = MPD_CONNECTED;
             break;
 
         case MPD_FAILURE:
-            syslog(LOG_ERR, "MPD connection failed.\n");
+            syslog(LOG_ERR, "%s - MPD connection failed.\n", __func__);
 
         case MPD_DISCONNECT:
         case MPD_RECONNECT:
@@ -569,7 +531,7 @@ void mpd_poll(struct mg_server *s)
             }
             break;
         default:
-            syslog(LOG_ERR, "mpd.conn_state %i\n", mpd.conn_state);
+            syslog(LOG_INFO, "%s - mpd.conn_state %i\n", __func__, mpd.conn_state);
     }
 }
 
@@ -873,8 +835,8 @@ int mpd_put_radio(char *buffer, unsigned int offset)
             if(!(config_setting_lookup_string(station, "name", &name)
                 && config_setting_lookup_string(station, "url", &url)))
                     continue;
-			numelements++;
-			if (numelements > offset) {
+      numelements++;
+      if (numelements > offset) {
                 syslog(LOG_INFO, "%s: %i %-30s  %-30s\n", __func__, numelements, name, url);
                 cur += json_emit_raw_str(cur, end - cur, "{\"name\":");
                 cur += json_emit_quoted_str(cur, end - cur, name);

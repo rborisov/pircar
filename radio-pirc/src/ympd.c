@@ -62,7 +62,7 @@ static int server_callback(struct mg_connection *c) {
 long GetAvailableSpace(const char* path)
 {
   struct statvfs stat;
-  
+
   if (statvfs(path, &stat) != 0) {
     // error happens, just quits here
     syslog(LOG_INFO, "%s error\n", __func__);
@@ -95,8 +95,8 @@ int main(int argc, char **argv)
 
     atexit(bye);
     mg_set_option(server, "listening_port", "8080");
-    mpd.port = 6600;
-    strcpy(mpd.host, "127.0.0.1");
+//    mpd.port = 6600;
+//    strcpy(mpd.host, "127.0.0.1");
 
     config_init(&rcm.cfg);
     if(! config_read_file(&rcm.cfg, rcm.config_file_name))
