@@ -14,7 +14,7 @@ while true; do
         sleep 1
         nmcli -t nm wwan on
         sleep 1
-        nmcli -t con up id "Tata Docomo Internet"
+        nmcli -t con up id "Megafon"
         #wait approximately 15 sec to get connected
         #if anyone can add better command to check for it just comment it :-p 
         sleep 15

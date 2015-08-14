@@ -18,7 +18,7 @@ while true; do
   nmcli -t nm wwan on
 
   # Connect to network
-  nmcli -t con up id "BSNL/CellOne New GPRS/3G 1"
+  nmcli -t con up id "Megafon"
 
   # Check status if connected or not
   nmcli -f device,state -t dev | grep ttyACM0 | awk -F':' '{print $2}' | { read status; }

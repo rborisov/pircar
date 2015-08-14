@@ -216,14 +216,41 @@ static int do_search(int argc, char ** argv, struct mpd_connection *conn, bool e
     return 0;
 }
 
+static int find_songname_id(struct mpd_connection *conn, const char *s)
+{
+    int res = -1;
+
+    mpd_search_queue_songs(conn, false);
+
+    const char *pattern = s; //charset_to_utf8(s);
+    mpd_search_add_any_tag_constraint(conn, MPD_OPERATOR_DEFAULT,
+                           pattern);
+    mpd_search_commit(conn);
+
+    struct mpd_song *song = mpd_recv_song(conn);
+    if (song != NULL) {
+        res = mpd_song_get_id(song);
+
+        mpd_song_free(song);
+    }
+
+    my_finishCommand(conn);
+
+    return res;
+}
+
 int main(int argc, char ** argv)
 {
     struct mpd_connection *conn = setup_connection();
+    int id = -1;
 
     if (!mpd_send_list_all_meta(conn, "radio"))
         printErrorAndExit(conn);
 
     print_entity_list(conn, MPD_ENTITY_TYPE_SONG);//MPD_ENTITY_TYPE_UNKNOWN);
+
+    id = find_songname_id(conn, "artist Radiohead");
+    printf("id = %i\n", id);
 
     mpd_connection_free(conn);
 
