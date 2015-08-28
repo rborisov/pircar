@@ -160,17 +160,17 @@ int callback_mpd(struct mg_connection *c)
     size_t n = 0;
     unsigned int uint_buf, uint_buf_2;
     int int_buf;
-    char *p_charbuf = NULL;
+    char *p_charbuf = NULL, *token;
 //    char *currentsonguri = NULL;
 //    struct mpd_song *song;
     char badsong[128];
 
     printf("%s\n", c->content);
     if(cmd_id == -1)
-        return MG_CLIENT_CONTINUE;
+        return MG_TRUE;
 
     if(mpd.conn_state != MPD_CONNECTED)
-        return MG_CLIENT_CONTINUE;
+        return MG_TRUE;
 
     mpd_connection_set_timeout(mpd.conn, 10000);
     switch(cmd_id)
@@ -307,13 +307,13 @@ int callback_mpd(struct mg_connection *c)
                 n = mpd_put_radio(mpd.buf, uint_buf);
             }
             break;
-        case MPD_API_GET_BROWSE:
+/*        case MPD_API_GET_BROWSE:
             if(sscanf(c->content, "MPD_API_GET_BROWSE,%u,%m[^\t\n]", &uint_buf, &p_charbuf) && p_charbuf != NULL)
             {
                 n = mpd_put_browse(mpd.buf, p_charbuf, uint_buf);
                 free(p_charbuf);
             }
-            break;
+            break;*/
         case MPD_API_SET_RADIO:
             if(sscanf(c->content, "MPD_API_SET_RADIO,%m[^\t\n]", &p_charbuf) && p_charbuf != NULL)
             {
@@ -328,7 +328,7 @@ int callback_mpd(struct mg_connection *c)
                 free(p_charbuf);
             }
             break;
-        case MPD_API_ADD_TRACK:
+/*        case MPD_API_ADD_TRACK:
             if(sscanf(c->content, "MPD_API_ADD_TRACK,%m[^\t\n]", &p_charbuf) && p_charbuf != NULL)
             {
                 mpd_run_add(mpd.conn, p_charbuf);
@@ -357,7 +357,7 @@ int callback_mpd(struct mg_connection *c)
                 n = mpd_search(mpd.buf, p_charbuf);
                 free(p_charbuf);
             }
-            break;
+            break;*/
         case TEST_DELETE_FILE:
 /*            song = mpd_run_current_song(mpd.conn);
             if(song == NULL) {
@@ -386,7 +386,7 @@ int callback_mpd(struct mg_connection *c)
     if(n > 0)
         mg_websocket_write(c, 1, mpd.buf, n);
 
-    return MG_CLIENT_CONTINUE;
+    return MG_TRUE;
 }
 
 int mpd_close_handler(struct mg_connection *c)
@@ -397,11 +397,11 @@ int mpd_close_handler(struct mg_connection *c)
     return 0;
 }
 
-static int mpd_notify_callback(struct mg_connection *c) {
+static int mpd_notify_callback(struct mg_connection *c, enum mg_event ev) {
     size_t n;
 
     if(!c->is_websocket)
-        return MG_REQUEST_PROCESSED;
+        return MG_TRUE;
 
     if(c->callback_param)
     {
@@ -410,7 +410,7 @@ static int mpd_notify_callback(struct mg_connection *c) {
             (const char *)c->callback_param);
 
         mg_websocket_write(c, 1, mpd.buf, n);
-        return MG_REQUEST_PROCESSED;
+        return MG_TRUE;
     }
 
     if(!c->connection_param)
@@ -439,7 +439,7 @@ static int mpd_notify_callback(struct mg_connection *c) {
                 mpd_run_add(mpd.conn, str);
                 mpd_run_play(mpd.conn);
             }
-            return MG_REQUEST_PROCESSED;
+            return MG_TRUE;
         }
 
         if(s->song_id != mpd.song_id)
@@ -473,7 +473,7 @@ static int mpd_notify_callback(struct mg_connection *c) {
         }
     }
 
-    return MG_REQUEST_PROCESSED;
+    return MG_TRUE;
 }
 
 void mpd_poll(struct mg_server *s)
@@ -495,13 +495,19 @@ void mpd_poll(struct mg_server *s)
             if (mpd_connection_get_error(mpd.conn) != MPD_ERROR_SUCCESS) {
                 syslog(LOG_ERR, "%s - MPD connection: %s\n", __func__,
                     mpd_connection_get_error_message(mpd.conn));
-                mg_iterate_over_connections(s, mpd_notify_callback,
-                    (void *)mpd_connection_get_error_message(mpd.conn));
+/*                mg_iterate_over_connections(s, mpd_notify_callback,
+                    (void *)mpd_connection_get_error_message(mpd.conn));*/
+                for (struct mg_connection *c = mg_next(s, NULL); c != NULL; c = mg_next(s, c))
+                {
+                    c->callback_param = (void *)mpd_connection_get_error_message(mpd.conn);
+                    mpd_notify_callback(c, MG_POLL);
+                }
                 mpd.conn_state = MPD_FAILURE;
                 return;
             }
 
             syslog(LOG_INFO, "%s - MPD connected.\n", __func__);
+            mpd_connection_set_timeout(mpd.conn, 10000);
             mpd.conn_state = MPD_CONNECTED;
             break;
 
@@ -518,7 +524,12 @@ void mpd_poll(struct mg_server *s)
 
         case MPD_CONNECTED:
             mpd.buf_size = mpd_put_state(mpd.buf, &mpd.song_id, &mpd.queue_version);
-            mg_iterate_over_connections(s, mpd_notify_callback, NULL);
+//            mg_iterate_over_connections(s, mpd_notify_callback, NULL);
+            for (struct mg_connection *c = mg_next(s, NULL); c != NULL; c = mg_next(s, c))
+            {
+                c->callback_param = NULL;
+                mpd_notify_callback(c, MG_POLL);
+            }
             if (queue_is_empty) {
                 get_random_song(mpd.conn, str, rcm.file_path);
 //                if (strcmp(str, "") == 0)

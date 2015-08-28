@@ -45,7 +45,7 @@ void bye()
 {
     force_exit = 1;
 }
-
+/*
 static int server_callback(struct mg_connection *c) {
     if (c->is_websocket)
     {
@@ -57,6 +57,32 @@ static int server_callback(struct mg_connection *c) {
     }
     else
         return callback_http(c);
+}
+*/
+static int server_callback(struct mg_connection *c, enum mg_event ev) 
+{
+    switch(ev) {
+        case MG_CLOSE:
+            mpd_close_handler(c);
+            return MG_TRUE;
+        case MG_REQUEST:
+            if (c->is_websocket) {
+                c->content[c->content_len] = '\0';
+                if(c->content_len)
+                    return callback_mpd(c);
+                else
+                    return MG_TRUE;
+            } else
+#ifdef WITH_DYNAMIC_ASSETS
+                return MG_FALSE;
+#else
+            return callback_http(c);
+#endif
+        case MG_AUTH:
+            return MG_TRUE;
+        default:
+            return MG_FALSE;
+    }
 }
 
 long GetAvailableSpace(const char* path)
@@ -76,7 +102,7 @@ long GetAvailableSpace(const char* path)
 
 int main(int argc, char **argv)
 {
-    struct mg_server *server = mg_create_server(NULL);
+    struct mg_server *server = mg_create_server(NULL, server_callback);
     unsigned int current_timer = 0, last_timer = 0;
     char *run_as_user = NULL;
     char radio_song_name[512] = "";
@@ -126,11 +152,12 @@ int main(int argc, char **argv)
 //        mpd_run_crossfade(mpd.conn, 0);
     }
 
-    mg_set_http_close_handler(server, mpd_close_handler);
+/*    mg_set_http_close_handler(server, mpd_close_handler);
     mg_set_request_handler(server, server_callback);
-
+*/
     while (!force_exit) {
-        current_timer = mg_poll_server(server, 200);
+        mg_poll_server(server, 200);
+        current_timer = time(NULL);
         if(current_timer - last_timer)
         {
             last_timer = current_timer;
