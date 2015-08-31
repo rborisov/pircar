@@ -378,9 +378,14 @@ int callback_mpd(struct mg_connection *c)
         n = snprintf(mpd.buf, MAX_SIZE, "{\"type\":\"error\", \"data\": \"%s\"}",
             mpd_connection_get_error_message(mpd.conn));
 
+        syslog(LOG_INFO, "%s: MPD_CONNECTION_ERROR: %s Try to recover...\n", __func__, 
+                mpd_connection_get_error_message(mpd.conn));
+
         /* Try to recover error */
-        if (!mpd_connection_clear_error(mpd.conn))
+        if (!mpd_connection_clear_error(mpd.conn)) {
+            syslog(LOG_INFO, "%s: MPD_FAILURE!\n", __func__);
             mpd.conn_state = MPD_FAILURE;
+        }
     }
 
     if(n > 0)
@@ -419,6 +424,7 @@ static int mpd_notify_callback(struct mg_connection *c, enum mg_event ev) {
     struct t_mpd_client_session *s = (struct t_mpd_client_session *)c->connection_param;
 
     if(mpd.conn_state != MPD_CONNECTED) {
+        syslog(LOG_INFO, "%s: mpd.conn_state != MPD_CONNECTED %i\n", __func__, mpd.conn_state);
         n = snprintf(mpd.buf, MAX_SIZE, "{\"type\":\"disconnected\"}");
         mg_websocket_write(c, 1, mpd.buf, n);
     }
