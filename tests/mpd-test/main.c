@@ -243,15 +243,16 @@ int main(int argc, char ** argv)
 {
     struct mpd_connection *conn = setup_connection();
     int id = -1;
-
-    if (!mpd_send_list_all_meta(conn, "radio"))
+    char *args[] = {"artist", "Eels", "title", "Bus Stop Boxer"};
+/*    if (!mpd_send_list_all_meta(conn, "radio"))
         printErrorAndExit(conn);
 
     print_entity_list(conn, MPD_ENTITY_TYPE_SONG);//MPD_ENTITY_TYPE_UNKNOWN);
-
-    id = find_songname_id(conn, "artist Radiohead");
+*/
+/*    id = find_songname_id(conn, "artist Eels");
     printf("id = %i\n", id);
-
+*/
+    do_search(4, args, conn, 1);
     mpd_connection_free(conn);
 
     return 0;

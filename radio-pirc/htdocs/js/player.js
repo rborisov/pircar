@@ -112,11 +112,6 @@ function webSocketConnect() {
                 case "disconnected":
                     updateNotificationIcon(2);
                     break;
-/*                case "update_queue":
-                    if(current_app === 'queue') {
-                        socket.send('MPD_API_GET_QUEUE,'+queue_pagination);
-                    }
-                    break;*/
                 case "current_radio":
                     $('#currentradio').text(obj.data.name);
                     $('#currentradiostatus').text(obj.data.status);
@@ -199,15 +194,6 @@ function webSocketConnect() {
                         if(obj.data.artist)
                             socket.send('MPD_API_DB_GET_ARTIST,'+obj.data.artist);
                     }
-
-//                    socket.send('MPD_API_GET_QUEUE,'+queue_pagination);
-
-                    break;
-                case "mpdhost":
-                    $('#mpdhost').val(obj.data.host);
-                    $('#mpdport').val(obj.data.port);
-                    if(obj.data.passwort_set)
-                        $('#mpd_password_set').removeClass('hide');
                     break;
                 case "error":
                     console.log(obj.data);
@@ -251,9 +237,12 @@ function get_appropriate_ws_url()
             u = u.substr(7);
     }
 
-    u = u.split('/');
+    /*u = u.split('/');
 
-    return pcol + u[0];
+    return pcol + u[0];*/
+
+    u = u.split('#');
+    return pcol + u[0] + "/ws";
 }
 
 var download_artist_info = function(artist)
@@ -372,13 +361,6 @@ var updateWWWIcon = function(www_state)
     } else {
         cloud_icon.style.color = 'yellowgreen';
     }
-/*    $("#www-state").removeClass('glyphicon-plane')
-    .removeClass("glyphicon-globe");
-    if (www_state == 0) {
-        $("#www-state").addClass('glyphicon-plane');
-    } else {
-        $("#www-state").addClass('glyphicon-globe');
-    }*/
 }
 
 function updateDB() {
