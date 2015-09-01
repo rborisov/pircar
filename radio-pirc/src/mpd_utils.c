@@ -7,7 +7,7 @@
 #include "mpd_client.h"
 #include "mpd_utils.h"
 #include "sqlitedb.h"
-//#include "radio.h"
+#include "radio.h"
 
 int mpd_crop(struct mpd_connection *conn)
 {

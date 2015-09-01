@@ -378,7 +378,7 @@ int callback_mpd(struct mg_connection *c)
         n = snprintf(mpd.buf, MAX_SIZE, "{\"type\":\"error\", \"data\": \"%s\"}",
             mpd_connection_get_error_message(mpd.conn));
 
-        syslog(LOG_INFO, "%s: MPD_CONNECTION_ERROR: %s Try to recover...\n", __func__, 
+        syslog(LOG_INFO, "%s: MPD_CONNECTION_ERROR: %s Try to recover...\n", __func__,
                 mpd_connection_get_error_message(mpd.conn));
 
         /* Try to recover error */
@@ -405,8 +405,10 @@ int mpd_close_handler(struct mg_connection *c)
 static int mpd_notify_callback(struct mg_connection *c, enum mg_event ev) {
     size_t n;
 
-    if(!c->is_websocket)
-        return MG_TRUE;
+    if(!c->is_websocket) {
+      syslog(LOG_DEBUG, "%s no websocket\n", __func__);
+      return MG_TRUE;
+    }
 
     if(c->callback_param)
     {
@@ -538,8 +540,6 @@ void mpd_poll(struct mg_server *s)
             }
             if (queue_is_empty) {
                 get_random_song(mpd.conn, str, rcm.file_path);
-//                if (strcmp(str, "") == 0)
-//                    get_random_song(mpd.conn, str, "");
                 if (strcmp(str, "") != 0) {
                     syslog(LOG_DEBUG, "%s: add random song %s\n", __func__, str);
                     mpd_run_add(mpd.conn, str);
