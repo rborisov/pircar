@@ -74,7 +74,16 @@ install(FILES "${STREAMRIPPER_LIB_PATH}src/.libs/libstreamripper.so.0.0.0" DESTI
 #install(FILES "${CONFIG_LIB_PATH}lib/.libs/libconfig.so.9.1.3" DESTINATION lib)
 #install(FILES "${CONFIG_LIB_PATH}lib/.libs/libconfig.so" DESTINATION lib)
 #install(FILES "${CONFIG_LIB_PATH}lib/.libs/libconfig.so.9" DESTINATION lib)
-install(FILES "${PROJECT_SOURCE_DIR}/files/ympd.conf" DESTINATION "/home/${USERNAME}/rcarmedia")
+install(FILES "${PROJECT_SOURCE_DIR}/files/ympd.conf" 
+        PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ 
+                    GROUP_EXECUTE GROUP_WRITE GROUP_READ
+                    WORLD_EXECUTE WORLD_WRITE WORLD_READ
+	DESTINATION "/home/${USERNAME}/rcarmedia")
+install(FILES "${PROJECT_SOURCE_DIR}/files/bkbg.jpg" 
+        PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ 
+                    GROUP_EXECUTE GROUP_READ
+                    WORLD_EXECUTE WORLD_READ
+	DESTINATION "/storage/images")
 #install(FILES "${PROJECT_SOURCE_DIR}/files/mpd.conf" DESTINATION src)
 
 #set(DBRADIO

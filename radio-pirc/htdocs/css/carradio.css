@@ -3,7 +3,6 @@ html {
 }
 body, html {
     font-family: monospace; font-size: 14px;
-    background: black;
     color: yellowgreen;
 }
 .btn{
