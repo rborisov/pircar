@@ -729,6 +729,12 @@ int mpd_put_current_song(char *buffer)
     {
         cur += json_emit_raw_str(cur, end - cur, ",\"artist\":");
         cur += json_emit_quoted_str(cur, end - cur, mpd_song_get_tag(song, MPD_TAG_ARTIST, 0));
+	if (mpd_get_artist_art(mpd_song_get_tag(song, MPD_TAG_ARTIST, 0)))
+	{
+		cur += json_emit_raw_str(cur, end - cur, ",\"artist_art\":");
+        	cur += json_emit_quoted_str(cur, end - cur, 
+			mpd_get_artist_art(mpd_song_get_tag(song, MPD_TAG_ARTIST, 0)));
+	}
     }
 
     if(mpd_get_album(song) != NULL)

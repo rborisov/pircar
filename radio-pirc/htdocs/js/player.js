@@ -29,6 +29,15 @@ var MAX_ELEMENTS_PER_PAGE = 5;
 var current_song_pos = 0;
 var next_song_pos = 0;
 
+Date.prototype.timeNow = function () {
+     return ((this.getHours() < 10)?"0":"") + this.getHours() +":"+ 
+		((this.getMinutes() < 10)?"0":"") + this.getMinutes() +":"+ 
+		((this.getSeconds() < 10)?"0":"") + this.getSeconds();
+}
+console.log = function(message) {$('#log').append('<p>' + new Date().timeNow() + ' ' + message + '</p>');
+				 $('#log').scrollTop($('#log')[0].scrollHeight);};
+console.error = console.debug = console.info =  console.log;
+
 var app = $.sammy(function() {
     function prepare() {
         $('#nav_links > li').removeClass('active');
@@ -121,6 +130,7 @@ function webSocketConnect() {
                     if (obj.data.artist && obj.data.art) {
                         var artimage = document.getElementById("artimage");
                         artimage.src = obj.data.art;
+			console.log("artist_info: " + obj.data.art);
                     } else {
                         if (obj.data.artist)
                             download_artist_info(obj.data.artist);
@@ -128,51 +138,11 @@ function webSocketConnect() {
                     break;
                 case "track_info":
                     if (obj.data.title && obj.data.artist) {
-                        var artimage = document.getElementById("artimage");
-                        artimage.src = "art.png";
+                        /*var artimage = document.getElementById("artimage");
+                        artimage.src = "art.png";*/
                         $('#album').text("");
-			document.body.style.backgroundImage = "url(bkbg.jpg)";
+			//document.body.style.backgroundImage = "url(bkbg.jpg)";
 			download_track_info(obj.data.artist, obj.data.title);
-/*                        $.get("http://ws.audioscrobbler.com/2.0/?method=track.getinfo&artist=" +
-                                obj.data.artist + "&track=" + obj.data.title +
-                                "&autocorrect=1&api_key=ecb4076a85c81aae38a7e8f11e42a0b1&format=json&callback=",
-                                function(lastfm)
-                                {
-                                    var art_url;
-                                    //var artimage = document.getElementById("artimage");
-                                    if (lastfm && lastfm.track && lastfm.track.album) {
-                                        if (lastfm.track.album.image &&
-                                            lastfm.track.album.image[1]['#text'].indexOf("default_album") == -1) {
-                                            art_url = lastfm.track.album.image[1]['#text'];
-                                            console.log(art_url);
-                                            //artimage.src = art_url;
-					    document.body.style.backgroundImage = "url(" + art_url + ")";
-                                        } else {
-                                            console.log("there is no track.album.image");
-                                            //socket.send('MPD_API_DB_GET_ARTIST,'+obj.data.artist);
-                                        }
-                                        if (lastfm.track.album.title) {
-                                            $('#album').text(lastfm.track.album.title);
-                                        } else {
-                                            //$('#album').text("");
-                                        }
-                                        if (lastfm.track.album) {
-                                            socket.send('MPD_API_DB_ALBUM,'+obj.data.title+'|'+obj.data.artist+'|'+
-                                                    lastfm.track.album.title+'|'+art_url);
-                                        }
-                                    } else {
-                                        //artimage.src = "/images/art.jpg";
-                                        console.log("there is no track info "+obj.data.artist+" "+obj.data.title);
-                                        socket.send('MPD_API_DB_GET_ARTIST,'+obj.data.artist);
-                                    }
-                                })
-                                //.done (function ()   { console.log("done"  ); })
-                                .fail (function ()   { console.log("fail"  ); })
-                                .error (function()   {
-                                    console.log("error" );
-                                    socket.send('MPD_API_DB_GET_ARTIST,'+obj.data.artist);
-                                })
-                                //.always (function()  { console.log("always"); });*/
                     }
                     break;
                 case "song_change":
@@ -183,24 +153,39 @@ function webSocketConnect() {
                     } else
                        $('#album').text("");
 
+		    var artimage = document.getElementById("artimage");
+		    artimage.src = "art.png";
                     if(obj.data.artist) {
                         $('#artist').text(obj.data.artist);
-                    } else
+			if(obj.data.artist_art) {
+                        	artimage.src = obj.data.artist_art;
+                    	} else {
+				socket.send('MPD_API_DB_GET_ARTIST,'+obj.data.artist);
+			}
+                    } else {
                         $('#artist').text("");
+			socket.send('MPD_API_DB_GET_ARTIST,'+obj.data.artist);
+		    }
+
+		    if(obj.data.artist_art) {
+			var artimage = document.getElementById("artimage");
+                        artimage.src = obj.data.artist_art;
+		    }
 
                     if(obj.data.art && obj.data.art.indexOf("default_album") == -1) {
-                        console.log(obj.data.art);
-                        var art_url = obj.data.art;
+                        console.log("song_change: " + obj.data.art);
+                        //var art_url = obj.data.art;
                         //document.getElementById("artimage").src = art_url;
-			document.body.style.backgroundImage = "url(" + art_url + ")";
+			document.body.style.backgroundImage = "url(\"" + obj.data.art + "\")";
                     } else {
-                        console.log("no art" );
-                        if(obj.data.artist)
-                            socket.send('MPD_API_DB_GET_ARTIST,'+obj.data.artist);
+                        console.log("song_change: no art" );
+			document.body.style.backgroundImage = "url(bkbg.jpg)";
+//                        if(obj.data.artist)
+//                            socket.send('MPD_API_DB_GET_ARTIST,'+obj.data.artist);
                     }
                     break;
                 case "error":
-                    console.log(obj.data);
+                    console.log("error: " + obj.data);
                     updateNotificationIcon(1);
                 default:
                     updateNotificationIcon(0);
@@ -262,14 +247,14 @@ var download_artist_info = function(artist)
 	        if (lastfm && lastfm.artist) {
 	            if (lastfm.artist.image[2]['#text']) {
 	                art_url = lastfm.artist.image[1]['#text'];
-	                console.log('art_url :'+art_url);
+	                console.log('download_artist_info:'+art_url);
 	                artimage.src = art_url;
 	                socket.send('MPD_API_DB_ARTIST,'+artist+'|'+art_url);
 	            } else {
-	                console.log("there is no artist image");
+	                console.log("download_artist_info: there is no artist image");
 	            }
 	        } else {
-	            console.log("there is no artist info");
+	            console.log("download_artist_info: there is no artist info");
 	        }
 	    });
     }, 0);
@@ -288,7 +273,7 @@ var download_track_info = function(artist, title)
 	    if (lastfm.track.album.image &&
 	       lastfm.track.album.image[1]['#text'].indexOf("default_album") == -1) {
 	        art_url = lastfm.track.album.image[1]['#text'];
-	        console.log(art_url);
+	        console.log("download_track_info: "+art_url);
                 //artimage.src = art_url;
 	        document.body.style.backgroundImage = "url(" + art_url + ")";
 	    }
@@ -300,10 +285,10 @@ var download_track_info = function(artist, title)
 	}
      })
      //.done (function ()   { console.log("done"  ); })
-     .fail (function ()   { console.log("fail"  ); })
+     .fail (function ()   { console.log("download_track_info: fail"  ); })
      .error (function()   {
-         console.log("error" );
-         socket.send('MPD_API_DB_GET_ARTIST,'+artist);
+         console.log("download_track_info: error" );
+//         socket.send('MPD_API_DB_GET_ARTIST,'+artist);
      })
      //.always (function()  { console.log("always"); });
 }
