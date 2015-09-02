@@ -161,7 +161,6 @@ function webSocketConnect() {
 			}
                     } else {
                         $('#artist').text("");
-			socket.send('MPD_API_DB_GET_ARTIST,'+obj.data.artist);
 		    }
 
                     if(obj.data.art && obj.data.art.indexOf("default_album") == -1) {
@@ -250,19 +249,18 @@ var download_artist_info = function(artist)
 
 var download_track_info = function(artist, title)
 {
+    setTimeout(function() {
     $.get("http://ws.audioscrobbler.com/2.0/?method=track.getinfo&artist=" +
         artist + "&track=" + title +
         "&autocorrect=1&api_key=ecb4076a85c81aae38a7e8f11e42a0b1&format=json&callback=",
     function(lastfm)
     {
         var art_url;
-        //var artimage = document.getElementById("artimage");
 	if (lastfm && lastfm.track && lastfm.track.album) {
 	    if (lastfm.track.album.image &&
 	       lastfm.track.album.image[1]['#text'].indexOf("default_album") == -1) {
 	        art_url = lastfm.track.album.image[1]['#text'];
 	        console.log("download_track_info: "+art_url);
-                //artimage.src = art_url;
 	        document.body.style.backgroundImage = "url(" + art_url + ")";
 	    }
 	    if (lastfm.track.album.title) {
@@ -272,13 +270,9 @@ var download_track_info = function(artist, title)
 	    }
 	}
      })
-     //.done (function ()   { console.log("done"  ); })
      .fail (function ()   { console.log("download_track_info: fail"  ); })
-     .error (function()   {
-         console.log("download_track_info: error" );
-//         socket.send('MPD_API_DB_GET_ARTIST,'+artist);
-     })
-     //.always (function()  { console.log("always"); });
+     .error (function()   { console.log("download_track_info: error" ); })
+     }, 0);
 }
 
 var updateNotificationIcon = function(notify)
