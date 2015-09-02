@@ -138,10 +138,7 @@ function webSocketConnect() {
                     break;
                 case "track_info":
                     if (obj.data.title && obj.data.artist) {
-                        /*var artimage = document.getElementById("artimage");
-                        artimage.src = "art.png";*/
                         $('#album').text("");
-			//document.body.style.backgroundImage = "url(bkbg.jpg)";
 			download_track_info(obj.data.artist, obj.data.title);
                     }
                     break;
@@ -167,21 +164,12 @@ function webSocketConnect() {
 			socket.send('MPD_API_DB_GET_ARTIST,'+obj.data.artist);
 		    }
 
-		    if(obj.data.artist_art) {
-			var artimage = document.getElementById("artimage");
-                        artimage.src = obj.data.artist_art;
-		    }
-
                     if(obj.data.art && obj.data.art.indexOf("default_album") == -1) {
                         console.log("song_change: " + obj.data.art);
-                        //var art_url = obj.data.art;
-                        //document.getElementById("artimage").src = art_url;
 			document.body.style.backgroundImage = "url(\"" + obj.data.art + "\")";
                     } else {
                         console.log("song_change: no art" );
 			document.body.style.backgroundImage = "url(bkbg.jpg)";
-//                        if(obj.data.artist)
-//                            socket.send('MPD_API_DB_GET_ARTIST,'+obj.data.artist);
                     }
                     break;
                 case "error":
