@@ -137,10 +137,12 @@ typedef int socklen_t;
 typedef int sock_t;
 typedef struct stat ns_stat_t;
 #endif
-
+#define NS_ENABLE_DEBUG
+#include <syslog.h> 
 #ifdef NS_ENABLE_DEBUG
-#define DBG(x) do { printf("%-20s ", __func__); printf x; putchar('\n'); \
-  fflush(stdout); } while(0)
+/*#define DBG(x) do { printf("%-20s ", __func__); printf x; putchar('\n'); \
+  fflush(stdout); } while(0)*/
+  #define DBG(x) syslog x
 #else
 #define DBG(x)
 #endif
