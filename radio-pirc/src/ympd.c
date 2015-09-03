@@ -120,7 +120,7 @@ int main(int argc, char **argv)
     syslog(LOG_INFO, "conf = %s\n", rcm.config_file_name);
 
     atexit(bye);
-    mg_set_option(server, "listening_port", "8080");
+    mg_set_option(server, "listening_port", "6969");
 //    mpd.port = 6600;
 //    strcpy(mpd.host, "127.0.0.1");
 

@@ -406,7 +406,7 @@ static int mpd_notify_callback(struct mg_connection *c, enum mg_event ev) {
     size_t n;
 
     if(!c->is_websocket) {
-      syslog(LOG_DEBUG, "%s no websocket\n", __func__);
+//      syslog(LOG_DEBUG, "%s no websocket\n", __func__);
       return MG_TRUE;
     }
 

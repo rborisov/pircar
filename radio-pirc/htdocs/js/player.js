@@ -28,6 +28,8 @@ var current_song = new Object();
 var MAX_ELEMENTS_PER_PAGE = 5;
 var current_song_pos = 0;
 var next_song_pos = 0;
+var artistlock = false;
+var tracklock = false;
 
 Date.prototype.timeNow = function () {
      return ((this.getHours() < 10)?"0":"") + this.getHours() +":"+ 
@@ -224,6 +226,8 @@ function get_appropriate_ws_url()
 var download_artist_info = function(artist)
 {
     setTimeout(function() {
+	if (!artistlock) {
+	    artistlock = true;
         $.get("http://ws.audioscrobbler.com/2.0/?method=artist.getinfo&artist=" +
             artist +
             "&autocorrect=1&api_key=ecb4076a85c81aae38a7e8f11e42a0b1&format=json&callback=",
@@ -233,7 +237,7 @@ var download_artist_info = function(artist)
 	        var artimage = document.getElementById("artimage");
 	        if (lastfm && lastfm.artist) {
 	            if (lastfm.artist.image[2]['#text']) {
-	                art_url = lastfm.artist.image[1]['#text'];
+	                art_url = lastfm.artist.image[2]['#text'];
 	                console.log('download_artist_info:'+art_url);
 	                artimage.src = art_url;
 	                socket.send('MPD_API_DB_ARTIST,'+artist+'|'+art_url);
@@ -244,12 +248,16 @@ var download_artist_info = function(artist)
 	            console.log("download_artist_info: there is no artist info");
 	        }
 	    });
+	    artistlock = false;
+	}
     }, 0);
 }
 
 var download_track_info = function(artist, title)
 {
     setTimeout(function() {
+	if (!tracklock) {
+	    tracklock = true;
     $.get("http://ws.audioscrobbler.com/2.0/?method=track.getinfo&artist=" +
         artist + "&track=" + title +
         "&autocorrect=1&api_key=ecb4076a85c81aae38a7e8f11e42a0b1&format=json&callback=",
@@ -258,8 +266,8 @@ var download_track_info = function(artist, title)
         var art_url;
 	if (lastfm && lastfm.track && lastfm.track.album) {
 	    if (lastfm.track.album.image &&
-	       lastfm.track.album.image[1]['#text'].indexOf("default_album") == -1) {
-	        art_url = lastfm.track.album.image[1]['#text'];
+	       lastfm.track.album.image[2]['#text'].indexOf("default_album") == -1) {
+	        art_url = lastfm.track.album.image[2]['#text'];
 	        console.log("download_track_info: "+art_url);
 	        document.body.style.backgroundImage = "url(" + art_url + ")";
 	    }
@@ -272,6 +280,8 @@ var download_track_info = function(artist, title)
      })
      .fail (function ()   { console.log("download_track_info: fail"  ); })
      .error (function()   { console.log("download_track_info: error" ); })
+	    tracklock = false;
+	}
      }, 0);
 }
 
