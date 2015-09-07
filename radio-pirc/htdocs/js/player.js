@@ -394,6 +394,14 @@ function clickRandom() {
     socket.send("MPD_API_TOGGLE_RANDOM," + ($("#random-icon").hasClass('glyphicon-sort-by-order') ? 1 : 0));
 }
 
+function clickDarken() {
+    if($(document.body).hasClass('darken')) {
+	$(document.body).removeClass('darken');
+    } else {
+	$(document.body).addClass('darken');
+    }
+}
+
 function basename(path) {
     return path.split('/').reverse()[0];
 }

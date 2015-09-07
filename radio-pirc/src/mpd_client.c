@@ -63,6 +63,10 @@ char* download_file(char* url, char* artist)
     CURLcode res;
     struct passwd *pw = getpwuid(getuid());
     char *out, *images_dir, *ext, *homedir = pw->pw_dir;
+
+	//TODO: possible root of app hang
+	return NULL;
+
     curl = curl_easy_init();
     if (curl)
     {
