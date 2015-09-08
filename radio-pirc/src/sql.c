@@ -29,21 +29,31 @@ sql_exec(sqlite3 *db, const char *fmt, ...)
 	char *errMsg = NULL;
 	char *sql;
 	va_list ap;
-	//DPRINTF(E_DEBUG, L_DB_SQL, "SQL: %s\n", sql);
+	int counter = 5;
 
 	va_start(ap, fmt);
 	sql = sqlite3_vmprintf(fmt, ap);
 	va_end(ap);
-//    syslog(LOG_DEBUG, "%s SQL: %s\n", __func__, sql);
 
-    ret = sqlite3_exec(db, sql, 0, 0, &errMsg);
+/*    	ret = sqlite3_exec(db, sql, 0, 0, &errMsg);
 	if( ret != SQLITE_OK )
 	{
-		//DPRINTF(E_ERROR, L_DB_SQL, "SQL ERROR %d [%s]\n%s\n", ret, errMsg, sql);
-        syslog(LOG_DEBUG, "%s SQL ERROR %d [%s]\n%s\n", __func__, ret, errMsg, sql);
+        	syslog(LOG_DEBUG, "%s SQL ERROR %d [%s]\n%s\n", __func__, ret, errMsg, sql);
 		if (errMsg)
 			sqlite3_free(errMsg);
-	}
+	}*/
+
+	do {
+	    ret = sqlite3_exec(db, sql, 0, 0, &errMsg);
+	    counter--;
+	    if( ret != SQLITE_OK )
+            {
+                syslog(LOG_DEBUG, "%s SQL ERROR %d [%s]\n%s\n", __func__, ret, errMsg, sql);
+                if (errMsg) sqlite3_free(errMsg);
+		sleep(1);
+            }
+	} while (counter && ret != SQLITE_OK);
+
 	sqlite3_free(sql);
 
 	return ret;

@@ -64,9 +64,6 @@ char* download_file(char* url, char* artist)
     struct passwd *pw = getpwuid(getuid());
     char *out, *images_dir, *ext, *homedir = pw->pw_dir;
 
-	//TODO: possible root of app hang
-	return NULL;
-
     curl = curl_easy_init();
     if (curl)
     {
@@ -85,7 +82,7 @@ char* download_file(char* url, char* artist)
             syslog(LOG_INFO, "%s: file already exists %s\n", __func__, outfn);
             goto done;
         }
-        syslog(LOG_INFO, "%s out_filename: %s\n", __func__, outfn);
+//        syslog(LOG_INFO, "%s out_filename: %s\n", __func__, outfn);
         fp = fopen(outfn,"wb");
         if (fp) {
             curl_easy_setopt(curl, CURLOPT_URL, url);
@@ -169,7 +166,7 @@ int callback_mpd(struct mg_connection *c)
 //    struct mpd_song *song;
     char badsong[128];
 
-    printf("%s\n", c->content);
+    syslog(LOG_INFO, "%s: content: %s cmd_id: %i", __func__, c->content, cmd_id);
     if(cmd_id == -1)
         return MG_TRUE;
 
@@ -201,7 +198,7 @@ int callback_mpd(struct mg_connection *c)
             if(sscanf(c->content, "MPD_API_DB_ARTIST,%m[^\t\n]",
                         &p_charbuf) && p_charbuf != NULL)
             {
-                syslog(LOG_INFO, "%s: MPD_API_DB_ARTIST: %s\n", __func__, p_charbuf);
+//                syslog(LOG_INFO, "%s: MPD_API_DB_ARTIST: %s\n", __func__, p_charbuf);
                 db_put_artist(p_charbuf);
                 free(p_charbuf);
             }
@@ -210,14 +207,14 @@ int callback_mpd(struct mg_connection *c)
             if(sscanf(c->content, "MPD_API_DB_GET_ARTIST,%m[^\t\n]",
                         &p_charbuf) && p_charbuf != NULL)
             {
-                syslog(LOG_INFO, "%s: MPD_API_DB_GET_ARTIST: %s\n", __func__, p_charbuf);
+//                syslog(LOG_INFO, "%s: MPD_API_DB_GET_ARTIST: %s\n", __func__, p_charbuf);
                 n = mpd_put_artist_art(mpd.buf, p_charbuf);
                 mg_websocket_write(c, 1, mpd.buf, n);
                 free(p_charbuf);
             }
             break;
         case MPD_API_TOGGLE_RADIO:
-            syslog(LOG_INFO, "%s: RADIO_TOGGLE_RADIO status: %i\n", __func__, radio_get_status());
+//            syslog(LOG_INFO, "%s: RADIO_TOGGLE_RADIO status: %i\n", __func__, radio_get_status());
             if (radio_toggle()) {
                 printf("radio ON; crossfade OFF\n");
                 mpd_run_crossfade(mpd.conn, 0);
@@ -258,7 +255,7 @@ int callback_mpd(struct mg_connection *c)
             break;
         case MPD_API_PLAY_TRACK:
             if(sscanf(c->content, "MPD_API_PLAY_TRACK,%u", &uint_buf)) {
-                syslog(LOG_INFO, "%s: PLAY_TRACK id %i\n", __func__, uint_buf);
+//                syslog(LOG_INFO, "%s: PLAY_TRACK id %i\n", __func__, uint_buf);
                 mpd_run_play_id(mpd.conn, uint_buf);
             }
             break;
@@ -440,17 +437,16 @@ static int mpd_notify_callback(struct mg_connection *c, enum mg_event ev) {
 
         if (mpd.song_id == -1)
         {
-            char str[128] = "";
-            syslog(LOG_INFO, "%s song_id == %i\n", __func__, mpd.song_id);
-            get_random_song(mpd.conn, str, rcm.file_path);
-//            if (strcmp(str, "") == 0)
-//               get_random_song(mpd.conn, str, "");
-            if (strcmp(str, "") != 0)
-            {
-                syslog(LOG_INFO, "%s: add random song %s and play\n", __func__, str);
-                mpd_run_add(mpd.conn, str);
-                mpd_run_play(mpd.conn);
-            }
+//            char str[128] = "";
+//            syslog(LOG_INFO, "%s song_id == %i\n", __func__, mpd.song_id);
+//            get_random_song(mpd.conn, str, rcm.file_path);
+//            if (strcmp(str, "") != 0)
+//            {
+//                syslog(LOG_INFO, "%s: add random song %s and play\n", __func__, str);
+//                mpd_run_add(mpd.conn, str);
+//                mpd_run_play(mpd.conn);
+		mpd_run_next(mpd.conn);
+//            }
             return MG_TRUE;
         }
 
@@ -527,7 +523,9 @@ void mpd_poll(struct mg_server *s)
             syslog(LOG_ERR, "%s - MPD connection failed.\n", __func__);
 
         case MPD_DISCONNECT:
+	    syslog(LOG_ERR, "%s - MPD disconnect\n", __func__);
         case MPD_RECONNECT:
+	    syslog(LOG_ERR, "%s - MPD reconnect\n", __func__);
             if(mpd.conn != NULL)
                 mpd_connection_free(mpd.conn);
             mpd.conn = NULL;
@@ -543,11 +541,11 @@ void mpd_poll(struct mg_server *s)
                 mpd_notify_callback(c, MG_POLL);
             }
             if (queue_is_empty) {
+                    queue_is_empty = 0;
                 get_random_song(mpd.conn, str, rcm.file_path);
                 if (strcmp(str, "") != 0) {
                     syslog(LOG_DEBUG, "%s: add random song %s\n", __func__, str);
                     mpd_run_add(mpd.conn, str);
-                    queue_is_empty = 0;
                 }
             }
             break;
@@ -614,10 +612,11 @@ char* mpd_get_art(struct mpd_song const *song)
 char* mpd_get_artist_art(char* artist)
 {
     char *str = db_get_artist_art(artist);
-    if (str)
+    if (str) {
         syslog(LOG_INFO, "%s: %s\n", __func__, str);
-    if (!image_exists(str))
-        return NULL;
+	if (!image_exists(str))
+            return NULL;
+    }
     return str;
 }
 

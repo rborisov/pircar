@@ -169,7 +169,7 @@ function webSocketConnect() {
                         console.log("song_change: " + obj.data.art);
 			document.body.style.backgroundImage = "url(\"" + obj.data.art + "\")";
                     } else {
-                        console.log("song_change: no art" );
+                        console.log("song_change: no art " + obj.data.art);
 			document.body.style.backgroundImage = "url(bkbg.jpg)";
                     }
                     break;

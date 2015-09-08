@@ -189,7 +189,7 @@ void db_result_free(char* buf)
  */
 int db_update_song_album(char* song, char* artist, char* album)
 {
-    int rc = 0;
+    int rc = 0, res, count = 5;
     if (album)
     {
         convert_str(artist);
@@ -197,8 +197,16 @@ int db_update_song_album(char* song, char* artist, char* album)
         convert_str(album);
         syslog(LOG_DEBUG, "%s update %s album...\n", __func__, album);
         if (sql_exec(conn, "UPDATE Songs SET album = '%s' WHERE song = '%s' AND artist = '%s'",
-                    album, song, artist) == SQLITE_OK)
+                    album, song, artist) == SQLITE_OK) {
             rc = 1;
+	}
+/*	do {
+	    res = sql_exec(conn, "UPDATE Songs SET album = '%s' WHERE song = '%s' AND artist = '%s'",
+                    album, song, artist);
+	    count--;
+	    if (count && res != SQLITE_OK) sleep(1);
+	} while (count && res != SQLITE_OK);
+	if (res == SQLITE_OK) rc = 1;*/
     }
     return rc;
 }
