@@ -67,6 +67,7 @@ char* download_file(char* url, char* artist)
     curl = curl_easy_init();
     if (curl)
     {
+#if 0
         if (!config_lookup_string(&rcm.cfg, "application.images_path", &images_dir))
         {
             syslog(LOG_ERR, "%s: No 'application.images_path' setting in configuration file.\n", __func__);
@@ -77,6 +78,8 @@ char* download_file(char* url, char* artist)
         sprintf(outfn, "%s%s", outdir, strrchr(url, '/' ));
         mkdir(images_dir, 0777);
         mkdir(outdir, 0777);
+#endif
+	sprintf(outfn, "%s/images/%s", SRC_PATH, strrchr(url, '/' ));
         //syslog(LOG_INFO, "%s\n", strrchr(outfn, '.'));
         if (access(outfn, F_OK) != -1) {
             syslog(LOG_INFO, "%s: file already exists %s\n", __func__, outfn);

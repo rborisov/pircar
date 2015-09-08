@@ -6,6 +6,8 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/../cmake/")
 set(CPACK_PACKAGE_VERSION_MAJOR "1")
 set(CPACK_PACKAGE_VERSION_MINOR "2")
 set(CPACK_PACKAGE_VERSION_PATCH "2")
+
+#SET(CMAKE_BUILD_TYPE RELEASE) #debug)
 if(CMAKE_BUILD_TYPE MATCHES RELEASE)
     set(ASSETS_PATH "${CMAKE_INSTALL_PREFIX}/share/${PROJECT_NAME}/htdocs")
 else()
@@ -15,7 +17,6 @@ set(STREAMRIPPER_LIB_PATH "${PROJECT_SOURCE_DIR}/../libstreamripper/")
 set(STREAMRIPPER_SRC_PATH "${PROJECT_SOURCE_DIR}/../libstreamripper/src/")
 set(CONFIG_LIB_PATH "${PROJECT_SOURCE_DIR}/../libconfig/")
 
-#SET(CMAKE_BUILD_TYPE debug)
 
 option(WITH_MPD_HOST_CHANGE "Let users of the web frontend change the MPD Host" ON)
 
@@ -72,34 +73,12 @@ set(SOURCES
 add_executable(radio-pirc ${SOURCES})
 target_link_libraries(radio-pirc ${LIBMPDCLIENT_LIBRARY} ${CMAKE_THREAD_LIBS_INIT} streamripper mad ogg vorbis config id3tag sqlite3 curl)
 install(TARGETS radio-pirc DESTINATION bin)
-#install(FILES radio-pirc.1 DESTINATION ${CMAKE_INSTALL_PREFIX}/share/man/man1)
 install(FILES "${STREAMRIPPER_LIB_PATH}src/.libs/libstreamripper.so" DESTINATION lib)
 install(FILES "${STREAMRIPPER_LIB_PATH}src/.libs/libstreamripper.so.0" DESTINATION lib)
 install(FILES "${STREAMRIPPER_LIB_PATH}src/.libs/libstreamripper.so.0.0.0" DESTINATION lib)
-#install(FILES "${CONFIG_LIB_PATH}lib/.libs/libconfig.so.9.1.3" DESTINATION lib)
-#install(FILES "${CONFIG_LIB_PATH}lib/.libs/libconfig.so" DESTINATION lib)
-#install(FILES "${CONFIG_LIB_PATH}lib/.libs/libconfig.so.9" DESTINATION lib)
 install(FILES "${PROJECT_SOURCE_DIR}/files/ympd.conf" 
-        PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ 
-                    GROUP_EXECUTE GROUP_WRITE GROUP_READ
-                    WORLD_EXECUTE WORLD_WRITE WORLD_READ
+        PERMISSIONS OWNER_WRITE OWNER_READ 
+                    GROUP_WRITE GROUP_READ
+                    WORLD_WRITE WORLD_READ
 	DESTINATION "/home/${USERNAME}/rcarmedia")
-install(FILES "${PROJECT_SOURCE_DIR}/files/bkbg.jpg" 
-        PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ 
-                    GROUP_EXECUTE GROUP_READ
-                    WORLD_EXECUTE WORLD_READ
-	DESTINATION "/storage/images")
 install(DIRECTORY htdocs DESTINATION share/${PROJECT_NAME})
-
-#install(FILES "${PROJECT_SOURCE_DIR}/files/mpd.conf" DESTINATION src)
-
-#set(DBRADIO
-#    tools/dbradio.c
-#    src/sqlitedb.c
-#    src/sql.c
-#    src/radio.c
-#    src/streamripper.c
-#)
-
-#add_executable(dbradio ${DBRADIO})
-#target_link_libraries(dbradio ${SQLITE3_LIBRARIES} config streamripper mad ogg vorbis id3tag)
