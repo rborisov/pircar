@@ -15,6 +15,7 @@ set(CMAKE_SYSTEM_VERSION 1)
 #set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS} -m32" CACHE STRING "c flags")
 
 set (INSTALL_DIR "/usr")
+set (CMAKE_INSTALL_PREFIX "/usr")
 
 #add_subdirectory ( indi-pirc )
 #add_subdirectory ( browser-pirc )

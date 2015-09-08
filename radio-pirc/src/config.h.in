@@ -24,8 +24,10 @@
 #define YMPD_VERSION_PATCH ${CPACK_PACKAGE_VERSION_PATCH}
 #define DATADIR "${CMAKE_INSTALL_PREFIX}/share/${PROJECT_NAME}"
 #define LOCAL_RESOURCE_PATH DATADIR"/htdocs"
-#cmakedefine WITH_MPD_HOST_CHANGE
+//#cmakedefine WITH_MPD_HOST_CHANGE
+#cmakedefine WITH_DYNAMIC_ASSETS
 #define RCM_DIR_STR "rcarmedia"
 #define RCM_CONF_FILE_STR "ympd.conf"
+#define SRC_PATH "${ASSETS_PATH}"
 #endif
 

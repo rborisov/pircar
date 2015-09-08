@@ -6,6 +6,11 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/../cmake/")
 set(CPACK_PACKAGE_VERSION_MAJOR "1")
 set(CPACK_PACKAGE_VERSION_MINOR "2")
 set(CPACK_PACKAGE_VERSION_PATCH "2")
+if(CMAKE_BUILD_TYPE MATCHES RELEASE)
+    set(ASSETS_PATH "${CMAKE_INSTALL_PREFIX}/share/${PROJECT_NAME}/htdocs")
+else()
+    set(ASSETS_PATH "${PROJECT_SOURCE_DIR}/htdocs")
+endif()
 set(STREAMRIPPER_LIB_PATH "${PROJECT_SOURCE_DIR}/../libstreamripper/")
 set(STREAMRIPPER_SRC_PATH "${PROJECT_SOURCE_DIR}/../libstreamripper/src/")
 set(CONFIG_LIB_PATH "${PROJECT_SOURCE_DIR}/../libconfig/")
@@ -84,6 +89,8 @@ install(FILES "${PROJECT_SOURCE_DIR}/files/bkbg.jpg"
                     GROUP_EXECUTE GROUP_READ
                     WORLD_EXECUTE WORLD_READ
 	DESTINATION "/storage/images")
+install(DIRECTORY htdocs DESTINATION share/${PROJECT_NAME})
+
 #install(FILES "${PROJECT_SOURCE_DIR}/files/mpd.conf" DESTINATION src)
 
 #set(DBRADIO

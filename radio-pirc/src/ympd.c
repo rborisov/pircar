@@ -73,11 +73,11 @@ static int server_callback(struct mg_connection *c, enum mg_event ev)
                 else
                     return MG_TRUE;
             } else
-#ifdef WITH_DYNAMIC_ASSETS
+//#ifdef WITH_DYNAMIC_ASSETS
                 return MG_FALSE;
-#else
+/*#else
             return callback_http(c);
-#endif
+#endif*/
         case MG_AUTH:
             return MG_TRUE;
         default:
@@ -117,9 +117,10 @@ int main(int argc, char **argv)
     rcm.last_timer = 0;
 
     sprintf(rcm.config_file_name, "%s/%s/%s", homedir, RCM_DIR_STR, RCM_CONF_FILE_STR);
-    syslog(LOG_INFO, "conf = %s\n", rcm.config_file_name);
+    syslog(LOG_INFO, "%s: conf = %s; SRC_PATH = %s", __func__, rcm.config_file_name, SRC_PATH);
 
     atexit(bye);
+    mg_set_option(server, "document_root", SRC_PATH);
     mg_set_option(server, "listening_port", "6969");
 //    mpd.port = 6600;
 //    strcpy(mpd.host, "127.0.0.1");
