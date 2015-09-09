@@ -153,7 +153,7 @@ function webSocketConnect() {
                        $('#album').text("");
 
 		    var artimage = document.getElementById("artimage");
-		    artimage.src = "images/art.png";
+		    artimage.src = "assets/art.png";
                     if(obj.data.artist) {
                         $('#artist').text(obj.data.artist);
 			if(obj.data.artist_art) {
@@ -170,7 +170,7 @@ function webSocketConnect() {
 			document.body.style.backgroundImage = "url(\"images/" + obj.data.art + "\")";
                     } else {
                         console.log("song_change: no art " + obj.data.art);
-			document.body.style.backgroundImage = "url(images/bkbg.jpg)";
+			document.body.style.backgroundImage = "url(assets/bkbg.jpg)";
                     }
                     break;
                 case "error":

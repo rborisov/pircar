@@ -25,6 +25,7 @@
 #include <mpd/client.h>
 #include <pwd.h>
 #include <curl/curl.h>
+#include <unistd.h>
 
 #include "mpd_client.h"
 #include "mpd_utils.h"
@@ -41,6 +42,7 @@ const char * mpd_cmd_strs[] = {
 static int queue_is_empty = 0;
 char outfn[128];
 char outdir[128];
+char symlnk[128];
 
 int mpd_get_track_info(char *buffer);
 int mpd_put_current_radio(char *buffer);
@@ -67,19 +69,16 @@ char* download_file(char* url, char* artist)
     curl = curl_easy_init();
     if (curl)
     {
-#if 0
         if (!config_lookup_string(&rcm.cfg, "application.images_path", &images_dir))
         {
             syslog(LOG_ERR, "%s: No 'application.images_path' setting in configuration file.\n", __func__);
-            sprintf(outdir, "%s/%s/images%s", homedir, RCM_DIR_STR, artist);
+	    sprintf(outdir, "%s/%s/images", homedir, RCM_DIR_STR);
         } else {
-            sprintf(outdir, "%s%s", images_dir, artist);
+	    sprintf(outdir, "%s", images_dir);
         }
         sprintf(outfn, "%s%s", outdir, strrchr(url, '/' ));
-        mkdir(images_dir, 0777);
         mkdir(outdir, 0777);
-#endif
-	sprintf(outfn, "%s/images/%s", SRC_PATH, strrchr(url, '/' ));
+
         //syslog(LOG_INFO, "%s\n", strrchr(outfn, '.'));
         if (access(outfn, F_OK) != -1) {
             syslog(LOG_INFO, "%s: file already exists %s\n", __func__, outfn);
@@ -101,8 +100,7 @@ char* download_file(char* url, char* artist)
         }
     }
 done:
-    //out = strrchr(outfn, '/' )+1;
-    sprintf(outdir, "%s%s", artist, strrchr(outfn, '/'));
+    sprintf(outdir, "%s", strrchr(outfn, '/')+1);
     syslog(LOG_DEBUG, "%s downloaded %s\n", __func__, outdir);
 
     return outdir;
@@ -495,7 +493,6 @@ void mpd_poll(struct mg_server *s)
             /* Try to connect */
             //syslog(LOG_INFO, "MPD Connecting to %s:%d\n", mpd.host, mpd.port);
             syslog(LOG_INFO, "%s - MPD Connecting...\n", __func__);
-            //mpd.conn = mpd_connection_new(mpd.host, mpd.port, 3000);
             mpd.conn = mpd_connection_new(NULL, NULL, 3000);
             if (mpd.conn == NULL) {
                 syslog(LOG_ERR, "%s - Out of memory.", __func__);
@@ -506,8 +503,6 @@ void mpd_poll(struct mg_server *s)
             if (mpd_connection_get_error(mpd.conn) != MPD_ERROR_SUCCESS) {
                 syslog(LOG_ERR, "%s - MPD connection: %s\n", __func__,
                     mpd_connection_get_error_message(mpd.conn));
-/*                mg_iterate_over_connections(s, mpd_notify_callback,
-                    (void *)mpd_connection_get_error_message(mpd.conn));*/
                 for (struct mg_connection *c = mg_next(s, NULL); c != NULL; c = mg_next(s, c))
                 {
                     c->callback_param = (void *)mpd_connection_get_error_message(mpd.conn);
@@ -537,7 +532,6 @@ void mpd_poll(struct mg_server *s)
 
         case MPD_CONNECTED:
             mpd.buf_size = mpd_put_state(mpd.buf, &mpd.song_id, &mpd.queue_version);
-//            mg_iterate_over_connections(s, mpd_notify_callback, NULL);
             for (struct mg_connection *c = mg_next(s, NULL); c != NULL; c = mg_next(s, c))
             {
                 c->callback_param = NULL;
@@ -586,6 +580,9 @@ int image_exists(char* name)
     } else {
         sprintf(outdir, "%s", images_dir);
     }
+    sprintf(symlnk, "%s/images", SRC_PATH);
+    symlink(outdir, symlnk);
+    
     sprintf(outfn, "%s/%s", outdir, name);
     syslog(LOG_INFO, "%s looking for %s ", __func__, outfn);
     if (access(outfn, F_OK) != -1) {
